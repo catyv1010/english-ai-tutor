@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EnglishAI — Tu tutor inteligente</title>
+  <style>
+    :root {
+      --primary: #5B4CF5;
+      --primary-light: #7B6FF7;
+      --primary-dark: #4035C3;
+      --accent: #FF6B6B;
+      --success: #4ECDC4;
+      --bg: #F0F2FF;
+      --bg-card: #FFFFFF;
+      --text: #1A1A2E;
+      --text-muted: #6B7280;
+      --border: #E5E7EB;
+      --shadow: 0 4px 24px rgba(91,76,245,0.1);
+      --radius: 16px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── SETUP SCREEN ── */
+    .setup-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
+    .setup-card { background: white; border-radius: 24px; padding: 48px; max-width: 480px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .setup-logo { text-align: center; margin-bottom: 32px; }
+    .setup-logo .emoji { font-size: 64px; display: block; margin-bottom: 12px; }
+    .setup-logo h1 { font-size: 32px; font-weight: 800; color: var(--primary); }
+    .setup-logo p { color: var(--text-muted); margin-top: 8px; font-size: 15px; }
+    .setup-form label { display: block; font-weight: 600; margin-bottom: 8px; }
+    .setup-form input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 14px; transition: border-color .2s; outline: none; }
+    .setup-form input:focus { border-color: var(--primary); }
+    .setup-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: transform .2s, box-shadow .2s; }
+    .setup-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(91,76,245,0.4); }
+    .setup-hint { background: #F0F2FF; border-radius: 12px; padding: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+    .setup-hint a { color: var(--primary); text-decoration: none; font-weight: 600; }
+    .setup-hint strong { color: var(--text); }
+
+    /* ── MAIN APP ── */
+    .app { display: none; min-height: 100vh; flex-direction: column; }
+    .app.active { display: flex; }
+
+    /* TOP NAV */
+    .topnav { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.05); }
+    .nav-logo { font-size: 22px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    .nav-center { display: flex; gap: 8px; }
+    .level-btn { padding: 6px 16px; border-radius: 20px; border: 2px solid var(--border); background: white; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text-muted); transition: all .2s; }
+    .level-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .chat-nav-btn { padding: 8px 20px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; border-radius: 20px; font-weight: 700; font-size: 14px; cursor: pointer; transition: transform .2s; }
+    .chat-nav-btn:hover { transform: scale(1.05); }
+    .api-settings-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 20px; padding: 4px; }
+
+    /* CONTENT */
+    .main-content { flex: 1; padding: 32px 24px; max-width: 1100px; margin: 0 auto; width: 100%; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── DASHBOARD ── */
+    .dashboard-header { margin-bottom: 32px; }
+    .dashboard-header h2 { font-size: 28px; font-weight: 800; }
+    .dashboard-header p { color: var(--text-muted); margin-top: 6px; }
+    .lessons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .lesson-card { background: white; border-radius: var(--radius); padding: 24px; cursor: pointer; transition: transform .2s, box-shadow .2s; box-shadow: var(--shadow); border: 2px solid transparent; position: relative; overflow: hidden; }
+    .lesson-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(91,76,245,.15); border-color: var(--primary); }
+    .lesson-card.completed { border-color: var(--success); }
+    .lesson-card-accent { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+    .lesson-emoji { font-size: 36px; margin-bottom: 12px; }
+    .lesson-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .lesson-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .lesson-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
+    .lesson-tag { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+    .tag-grammar { background: #EEF2FF; color: var(--primary); }
+    .tag-vocabulary { background: #FFF0F5; color: var(--accent); }
+    .tag-phrases { background: #F0FFF4; color: #059669; }
+    .tag-communication { background: #FFFBEB; color: #D97706; }
+    .lesson-duration { font-size: 12px; color: var(--text-muted); }
+    .completed-badge { position: absolute; top: 16px; right: 16px; background: var(--success); color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+    /* ── LESSON VIEW ── */
+    .lesson-view-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+    .back-btn { background: white; border: 2px solid var(--border); border-radius: 12px; padding: 8px 16px; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; transition: all .2s; white-space: nowrap; }
+    .back-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .lesson-view-title { font-size: 26px; font-weight: 800; }
+    .lesson-view-subtitle { color: var(--text-muted); margin-top: 4px; }
+    .lesson-section { background: white; border-radius: var(--radius); padding: 28px; margin-bottom: 20px; box-shadow: var(--shadow); }
+    .lesson-section h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .section-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+
+    /* Vocab Table */
+    .vocab-table { width: 100%; border-collapse: collapse; }
+    .vocab-table th { background: var(--bg); padding: 10px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
+    .vocab-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .vocab-table tr:last-child td { border-bottom: none; }
+    .vocab-en { font-weight: 700; color: var(--primary); }
+    .vocab-es { color: var(--text-muted); }
+    .vocab-example { font-style: italic; color: #4B5563; }
+
+    /* Grammar */
+    .grammar-rule { background: linear-gradient(135deg, #EEF2FF, #F5F3FF); border-left: 4px solid var(--primary); border-radius: 0 12px 12px 0; padding: 16px 20px; margin-bottom: 16px; }
+    .grammar-rule .rule-title { font-weight: 700; margin-bottom: 8px; }
+    .grammar-rule .rule-formula { background: white; border-radius: 8px; padding: 10px 14px; font-family: 'Courier New', monospace; font-size: 13px; margin-bottom: 10px; border: 1px solid var(--border); }
+    .grammar-examples { list-style: none; }
+    .grammar-examples li { padding: 8px 0; border-bottom: 1px dashed var(--border); display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
+    .grammar-examples li:last-child { border-bottom: none; }
+    .grammar-examples .en { font-weight: 600; flex: 1; }
+    .grammar-examples .es { color: var(--text-muted); flex: 1; }
+
+    /* Practice */
+    .practice-area { background: var(--bg); border-radius: 12px; padding: 20px; }
+    .practice-prompt { font-weight: 600; margin-bottom: 8px; }
+    .practice-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5; }
+    .practice-input { width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; transition: border-color .2s; resize: vertical; min-height: 100px; font-family: inherit; }
+    .practice-input:focus { border-color: var(--primary); }
+    .practice-btn { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; margin-top: 10px; transition: background .2s; }
+    .practice-btn:hover { background: var(--primary-dark); }
+    .practice-feedback { margin-top: 12px; padding: 14px 16px; border-radius: 10px; font-size: 14px; line-height: 1.6; display: none; }
+    .practice-feedback.correct { background: #F0FFF4; color: #065F46; border: 1px solid #A7F3D0; }
+    .practice-feedback.error { background: #FFF5F5; color: #991B1B; border: 1px solid #FCA5A5; }
+
+    /* Lesson Actions */
+    .lesson-actions { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+    .complete-btn { padding: 14px 28px; background: var(--success); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: all .2s; flex: 1; min-width: 180px; }
+    .complete-btn:hover { background: #3AB8B0; transform: translateY(-2px); }
+    .complete-btn.done { background: #9CA3AF; cursor: default; transform: none; }
+    .chat-lesson-btn { padding: 14px 28px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: all .2s; flex: 1; min-width: 180px; }
+    .chat-lesson-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(91,76,245,.3); }
+
+    /* ── CHAT VIEW ── */
+    .chat-container { height: calc(100vh - 185px); display: flex; flex-direction: column; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .chat-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; }
+    .chat-avatar { width: 48px; height: 48px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .chat-header-info h3 { font-size: 17px; font-weight: 700; }
+    .chat-header-info p { font-size: 12px; opacity: .85; }
+    .chat-context-tag { margin-left: auto; background: rgba(255,255,255,.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+    .message { display: flex; gap: 10px; max-width: 78%; }
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .msg-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .message.assistant .msg-avatar { background: var(--bg); }
+    .message.user .msg-avatar { background: var(--primary); color: white; font-size: 13px; font-weight: 700; }
+    .msg-bubble { padding: 12px 16px; border-radius: 16px; font-size: 15px; line-height: 1.6; }
+    .message.assistant .msg-bubble { background: var(--bg); border-radius: 4px 16px 16px 16px; }
+    .message.user .msg-bubble { background: var(--primary); color: white; border-radius: 16px 4px 16px 16px; }
+    .typing-indicator { display: flex; gap: 5px; padding: 14px 18px; background: var(--bg); border-radius: 4px 16px 16px 16px; width: fit-content; }
+    .typing-dot { width: 8px; height: 8px; background: var(--text-muted); border-radius: 50%; animation: bounce 1.2s infinite; }
+    .typing-dot:nth-child(2) { animation-delay: .2s; }
+    .typing-dot:nth-child(3) { animation-delay: .4s; }
+    @keyframes bounce { 0%,60%,100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-7px); opacity: 1; } }
+    .suggestion-chips { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 24px 0; }
+    .chip { padding: 6px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; font-size: 13px; cursor: pointer; transition: all .2s; color: var(--primary); font-weight: 500; }
+    .chip:hover { background: var(--primary); color: white; border-color: var(--primary); }
+    .chat-input-area { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: flex-end; background: white; }
+    .chat-input { flex: 1; padding: 11px 15px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; transition: border-color .2s; resize: none; max-height: 120px; font-family: inherit; line-height: 1.5; }
+    .chat-input:focus { border-color: var(--primary); }
+    .send-btn { width: 46px; height: 46px; background: var(--primary); color: white; border: none; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 19px; transition: all .2s; flex-shrink: 0; }
+    .send-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+    .send-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; }
+
+    /* Toast */
+    .error-toast { position: fixed; bottom: 24px; right: 24px; background: #991B1B; color: white; padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 1000; display: none; max-width: 340px; line-height: 1.5; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .lessons-grid { grid-template-columns: 1fr; }
+      .nav-center { display: none; }
+      .setup-card { padding: 28px 20px; }
+      .main-content { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     SETUP SCREEN
+══════════════════════════════════ -->
+<div class="setup-screen" id="setupScreen">
+  <div class="setup-card">
+    <div class="setup-logo">
+      <span class="emoji">🎓</span>
+      <h1>EnglishAI</h1>
+      <p>Tu tutor de inglés personalizado con Inteligencia Artificial</p>
+    </div>
+    <form class="setup-form" onsubmit="startApp(event)">
+      <label for="apiKey">🔑 Tu API Key de OpenAI</label>
+      <input type="password" id="apiKey" placeholder="sk-proj-..." required autocomplete="off" />
+      <button type="submit" class="setup-btn">🚀 Comenzar a aprender inglés</button>
+    </form>
+    <div class="setup-hint">
+      <strong>¿Cómo obtener tu API Key? (gratis para empezar)</strong><br>
+      1. Ve a <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a><br>
+      2. Crea una cuenta (OpenAI da crédito gratis al registrarte)<br>
+      3. En "API keys", crea una nueva key y pégala arriba<br><br>
+      <strong>💸 Costo real:</strong> Esta app usa <strong>GPT-4o mini</strong>, que cuesta ~$0.15 USD por millón de tokens. 100 conversaciones completas = menos de $0.05 USD. ¡Casi gratis!<br><br>
+      🔒 Tu API key solo se guarda en <em>tu navegador</em> (localStorage), nunca en servidores externos.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MAIN APP
+══════════════════════════════════ -->
+<div class="app" id="mainApp">
+
+  <!-- TOP NAV -->
+  <nav class="topnav">
+    <div class="nav-logo">🎓 EnglishAI</div>
+    <div class="nav-center">
+      <button class="level-btn active" onclick="setLevel('A1', this)">A1 Básico</button>
+      <button class="level-btn" onclick="setLevel('A2', this)">A2 Elemental</button>
+      <button class="level-btn" onclick="setLevel('B1', this)">B1 Intermedio</button>
+    </div>
+    <div class="nav-right">
+      <button class="chat-nav-btn" onclick="openChat(null)">💬 Hablar con tutor</button>
+      <button class="api-settings-btn" onclick="resetApiKey()" title="Cambiar API Key">⚙️</button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+
+    <!-- ── DASHBOARD VIEW ── -->
+    <div class="view active" id="dashboardView">
+      <div class="dashboard-header">
+        <h2 id="levelTitle">🌱 Nivel A1 — Básico</h2>
+        <p id="levelDesc">Aprende los fundamentos del inglés: saludos, vocabulario esencial y gramática básica</p>
+      </div>
+      <div class="lessons-grid" id="lessonsGrid"></div>
+    </div>
+
+    <!-- ── LESSON VIEW ── -->
+    <div class="view" id="lessonView">
+      <div class="lesson-view-header">
+        <button class="back-btn" onclick="goToDashboard()">← Volver</button>
+        <div>
+          <div class="lesson-view-title" id="lessonTitle"></div>
+          <div class="lesson-view-subtitle" id="lessonSubtitle"></div>
+        </div>
+      </div>
+      <div id="lessonContent"></div>
+    </div>
+
+    <!-- ── CHAT VIEW ── -->
+    <div class="view" id="chatView">
+      <div class="lesson-view-header">
+        <button class="back-btn" onclick="goBack()">← Volver</button>
+        <div>
+          <div class="lesson-view-title">Tutor IA — Alex</div>
+          <div class="lesson-view-subtitle" id="chatSubtitle">Conversación libre</div>
+        </div>
+      </div>
+      <div class="chat-container">
+        <div class="chat-header">
+          <div class="chat-avatar">🤖</div>
+          <div class="chat-header-info">
+            <h3>Alex — Tu Tutor de Inglés</h3>
+            <p>GPT-4o mini · Método comunicativo · Corrección gentil</p>
+          </div>
+          <div class="chat-context-tag" id="chatContextTag">💬 Free Chat</div>
+        </div>
+        <div class="suggestion-chips" id="suggestionChips"></div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-area">
+          <textarea class="chat-input" id="chatInput"
+            placeholder="Write in English... (Escribe en inglés)"
+            rows="1"
+            onkeydown="handleEnter(event)"
+            oninput="autoResize(this)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="error-toast" id="errorToast"></div>
+
+<!-- ══════════════════════════════════
+     LESSON DATA
+══════════════════════════════════ -->
+<script>
+const LESSONS = {
+  A1: [
+    {
+      id: 'a1_greetings', emoji: '👋',
+      title: 'Greetings & Introductions', titleEs: 'Saludos y presentaciones',
+      description: 'Aprende a saludar y presentarte en inglés.', tag: 'phrases', duration: '15 min', color: '#6C63FF',
+      vocabulary: [
+        { en: 'Hello / Hi', es: 'Hola', example: '"Hello! My name is Ana."' },
+        { en: 'Good morning', es: 'Buenos días', example: '"Good morning, how are you?"' },
+        { en: 'Good afternoon', es: 'Buenas tardes', example: '"Good afternoon, nice to meet you."' },
+        { en: 'Good night / Goodbye', es: 'Buenas noches / Adiós', example: '"Good night! See you tomorrow."' },
+        { en: 'Please / Thank you', es: 'Por favor / Gracias', example: '"Can you help me, please? Thank you!"' },
+        { en: 'Sorry / Excuse me', es: 'Lo siento / Disculpe', example: '"Excuse me, where is the bathroom?"' },
+        { en: 'Nice to meet you', es: 'Mucho gusto', example: '"Nice to meet you! I\'m Carlos."' },
+      ],
+      grammar: {
+        title: 'Verb "To Be" — Presentaciones básicas',
+        rules: [
+          { title: 'Afirmativo', formula: 'I am / You are / He is / She is / We are / They are',
+            examples: [
+              { en: 'I am Ana. I am from Mexico.', es: 'Soy Ana. Soy de México.' },
+              { en: 'She is my teacher.', es: 'Ella es mi maestra.' },
+              { en: 'We are students.', es: 'Somos estudiantes.' },
+            ]},
+          { title: 'Preguntas esenciales', formula: 'What is your name? / How are you? / Where are you from?',
+            examples: [
+              { en: 'What is your name? → My name is...', es: '¿Cómo te llamas? → Me llamo...' },
+              { en: 'How are you? → I am fine, thank you.', es: '¿Cómo estás? → Estoy bien, gracias.' },
+              { en: 'Where are you from? → I am from Colombia.', es: '¿De dónde eres? → Soy de Colombia.' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Escribe una presentación corta: tu nombre, de dónde eres, cómo estás y una cosa que te gusta.',
+        hint: 'Ejemplo: "Hello! My name is Ana. I am from Mexico. I am fine today. I like music."'
+      }
+    },
+    {
+      id: 'a1_numbers', emoji: '🔢',
+      title: 'Numbers & Basic Math', titleEs: 'Números y vocabulario básico',
+      description: 'Del 1 al 100, edades y precios en inglés.', tag: 'vocabulary', duration: '20 min', color: '#FF6B6B',
+      vocabulary: [
+        { en: 'One, Two, Three, Four, Five', es: 'Uno, Dos, Tres, Cuatro, Cinco', example: '"I have three sisters."' },
+        { en: 'Ten, Twenty, Thirty, Fifty, Hundred', es: 'Diez, Veinte, Treinta, Cincuenta, Cien', example: '"She is twenty-two years old."' },
+        { en: 'How much? / How many?', es: '¿Cuánto cuesta? / ¿Cuántos?', example: '"How much is this? — It\'s ten dollars."' },
+        { en: 'Dollar / Euro / Free', es: 'Dólar / Euro / Gratis', example: '"The app is free!"' },
+        { en: 'First / Second / Third', es: 'Primero / Segundo / Tercero', example: '"I live on the third floor."' },
+      ],
+      grammar: {
+        title: 'Edades y precios',
+        rules: [
+          { title: 'Preguntar la edad', formula: 'How old are you? → I am [number] years old.',
+            examples: [
+              { en: 'How old are you? — I am 21 years old.', es: '¿Cuántos años tienes? — Tengo 21 años.' },
+              { en: 'How old is she? — She is 35.', es: '¿Cuántos años tiene? — Tiene 35.' },
+            ]},
+          { title: 'Preguntar precios', formula: 'How much is/are [item]? → It costs / They cost $[number].',
+            examples: [
+              { en: 'How much is the coffee? — It costs 3 dollars.', es: '¿Cuánto cuesta el café? — Cuesta 3 dólares.' },
+              { en: 'How much are the tickets? — They cost fifty dollars.', es: '¿Cuánto cuestan los boletos? — Cuestan 50 dólares.' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Traduce estas oraciones al inglés: (1) Tengo 20 años. (2) Mi libro cuesta 15 dólares. (3) Hay 30 estudiantes en mi clase.',
+        hint: 'Usa: I am... years old. / It costs... / There are...'
+      }
+    },
+    {
+      id: 'a1_colors', emoji: '🎨',
+      title: 'Colors & Descriptions', titleEs: 'Colores y descripciones',
+      description: 'Describe objetos y personas con adjetivos básicos.', tag: 'vocabulary', duration: '15 min', color: '#4ECDC4',
+      vocabulary: [
+        { en: 'Red / Blue / Green', es: 'Rojo / Azul / Verde', example: '"Her car is red."' },
+        { en: 'Yellow / Orange / Purple', es: 'Amarillo / Naranja / Morado', example: '"The sunset is orange."' },
+        { en: 'Black / White / Brown', es: 'Negro / Blanco / Café', example: '"He has a black cat."' },
+        { en: 'Big / Small / Tall / Short', es: 'Grande / Pequeño / Alto / Bajo', example: '"I live in a big city."' },
+        { en: 'Beautiful / Old / New / Fast', es: 'Bonito/a / Viejo/a / Nuevo/a / Rápido/a', example: '"This is my new phone."' },
+      ],
+      grammar: {
+        title: 'Adjetivos — siempre ANTES del sustantivo',
+        rules: [
+          { title: 'Posición del adjetivo (¡diferente al español!)',
+            formula: '[adjective] + [noun] → "a red car" (NOT "a car red")',
+            examples: [
+              { en: 'A small brown dog (NOT: a dog small brown)', es: 'Un perro pequeño café' },
+              { en: 'A beautiful old house', es: 'Una casa vieja hermosa' },
+              { en: 'My new blue backpack', es: 'Mi mochila azul nueva' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Describe 3 objetos de tu habitación usando colores y adjetivos. ¡Usa frases completas!',
+        hint: 'Ejemplo: "I have a small black desk. My phone is white and new. There is a big green plant near my window."'
+      }
+    },
+    {
+      id: 'a1_time', emoji: '📅',
+      title: 'Days, Months & Time', titleEs: 'Días, meses y expresiones de tiempo',
+      description: 'Habla de fechas, horarios y rutinas temporales.', tag: 'vocabulary', duration: '20 min', color: '#FFE66D',
+      vocabulary: [
+        { en: 'Monday, Tuesday, Wednesday...', es: 'Lunes, Martes, Miércoles...', example: '"My class is on Monday."' },
+        { en: 'January, February, March...', es: 'Enero, Febrero, Marzo...', example: '"My birthday is in October."' },
+        { en: 'Today / Tomorrow / Yesterday', es: 'Hoy / Mañana / Ayer', example: '"I have an exam tomorrow."' },
+        { en: 'Morning / Afternoon / Night', es: 'Mañana / Tarde / Noche', example: '"I study in the morning."' },
+        { en: 'What time is it? / It is...', es: '¿Qué hora es? / Son las...', example: '"It is three thirty."' },
+      ],
+      grammar: {
+        title: 'Preposiciones de tiempo: IN / ON / AT',
+        rules: [
+          { title: 'La regla IN / ON / AT',
+            formula: 'IN → meses, años, estaciones | ON → días, fechas | AT → horas exactas',
+            examples: [
+              { en: 'My birthday is IN March.', es: 'Mi cumpleaños es en marzo.' },
+              { en: 'Class is ON Monday. / ON December 25th.', es: 'La clase es el lunes. / El 25 de diciembre.' },
+              { en: 'We start AT 8 o\'clock. / AT noon.', es: 'Empezamos a las 8. / Al mediodía.' },
+              { en: 'IN the morning / AT night (excepción)', es: 'En la mañana / De noche' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Escribe en inglés: (1) Hoy es lunes 19 de abril. (2) Mi clase es a las 9 de la mañana. (3) Mi cumpleaños es en julio. (4) Hay clase el viernes.',
+        hint: 'Recuerda: Today is... / My class is at... / My birthday is in... / Class is on...'
+      }
+    },
+    {
+      id: 'a1_food', emoji: '🍽️',
+      title: 'Food & Drinks', titleEs: 'Comida, bebidas y gustos',
+      description: 'Ordena comida y habla de lo que te gusta comer.', tag: 'communication', duration: '20 min', color: '#A8E063',
+      vocabulary: [
+        { en: 'Breakfast / Lunch / Dinner', es: 'Desayuno / Almuerzo / Cena', example: '"I eat breakfast at 7 AM."' },
+        { en: 'Water / Coffee / Juice / Milk', es: 'Agua / Café / Jugo / Leche', example: '"Can I have a coffee, please?"' },
+        { en: 'Rice / Bread / Chicken / Salad', es: 'Arroz / Pan / Pollo / Ensalada', example: '"I like rice and beans."' },
+        { en: 'I like / I love / I hate / I don\'t like', es: 'Me gusta / Me encanta / Odio / No me gusta', example: '"I love pizza but I don\'t like fish."' },
+        { en: 'I am hungry / I am thirsty', es: 'Tengo hambre / Tengo sed', example: '"I am hungry. Can we eat?"' },
+      ],
+      grammar: {
+        title: 'Expresar gustos: LIKE + sustantivo / verb-ing',
+        rules: [
+          { title: 'I like / I don\'t like / I love',
+            formula: 'I like/love/hate + [noun] OR [verb + -ing]',
+            examples: [
+              { en: 'I like pizza. I love cooking!', es: 'Me gusta la pizza. ¡Me encanta cocinar!' },
+              { en: 'She doesn\'t like spicy food.', es: 'A ella no le gusta la comida picante.' },
+              { en: 'Do you like sushi? — Yes, I love it!', es: '¿Te gusta el sushi? — ¡Sí, me encanta!' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Escribe 4 cosas que te gustan/encantan y 2 que no te gustan de comer o beber.',
+        hint: 'Ejemplo: "I love pizza and mango juice. I like rice and beans. I don\'t like coffee or spicy food."'
+      }
+    },
+  ],
+
+  A2: [
+    {
+      id: 'a2_present_simple', emoji: '⏰',
+      title: 'Present Simple — Daily Routines', titleEs: 'Presente simple — Rutinas diarias',
+      description: 'Habla de hábitos y actividades que haces regularmente.', tag: 'grammar', duration: '25 min', color: '#6C63FF',
+      vocabulary: [
+        { en: 'Wake up / Get up', es: 'Despertar / Levantarse', example: '"I wake up at 6 AM every day."' },
+        { en: 'Have breakfast / go to school', es: 'Desayunar / ir a la escuela', example: '"She has breakfast at 7."' },
+        { en: 'Study / Work / Exercise', es: 'Estudiar / Trabajar / Ejercitarse', example: '"I exercise three times a week."' },
+        { en: 'Always / Usually / Sometimes / Never', es: 'Siempre / Usualmente / A veces / Nunca', example: '"I always drink coffee in the morning."' },
+        { en: 'Every day / On weekdays / On weekends', es: 'Todos los días / Entre semana / Los fines de semana', example: '"I study on weekdays."' },
+      ],
+      grammar: {
+        title: 'Present Simple — Reglas completas',
+        rules: [
+          { title: '3ª persona: agrega -S (o -ES)',
+            formula: 'I/You/We/They + verb | He/She/It + verb-s/-es',
+            examples: [
+              { en: 'I study → She studIES (y → ies)', es: 'Yo estudio → Ella estudia' },
+              { en: 'I go → He GOES | I watch → She watchES', es: 'Yo voy → Él va | Yo veo → Ella ve' },
+            ]},
+          { title: 'Negativo: DON\'T / DOESN\'T',
+            formula: 'I/You/We/They don\'t + verb | He/She/It doesn\'t + verb (base)',
+            examples: [
+              { en: 'I don\'t eat meat.', es: 'No como carne.' },
+              { en: 'She doesn\'t like Mondays.', es: 'A ella no le gustan los lunes.' },
+            ]},
+          { title: 'Preguntas: DO / DOES',
+            formula: 'Do you + verb? | Does he/she + verb? → Yes, I do / No, she doesn\'t',
+            examples: [
+              { en: 'Do you exercise? — Yes, I do. Every morning.', es: '¿Haces ejercicio? — Sí, cada mañana.' },
+              { en: 'Does she work here? — No, she doesn\'t.', es: '¿Trabaja ella aquí? — No.' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Describe tu rutina diaria en inglés (mínimo 5 oraciones). Incluye: wake up, breakfast, school/work, afternoon, night. Usa adverbios de frecuencia (always, usually, sometimes).',
+        hint: 'Ejemplo: "I usually wake up at 7 AM. I always have breakfast before class. I study at university from 9 to 2..."'
+      }
+    },
+    {
+      id: 'a2_past_simple', emoji: '⏪',
+      title: 'Past Simple — Yesterday', titleEs: 'Pasado simple — Lo que hiciste',
+      description: 'Cuenta eventos y experiencias del pasado.', tag: 'grammar', duration: '30 min', color: '#FF6B6B',
+      vocabulary: [
+        { en: 'Yesterday / Last week / Last year', es: 'Ayer / La semana pasada / El año pasado', example: '"I went to the movies yesterday."' },
+        { en: '[Number] days/years ago', es: 'Hace [número] días/años', example: '"She moved here 3 months ago."' },
+        { en: 'Regular: work→worked, study→studied', es: 'Regulares: agregan -ed', example: '"I worked until 8 PM."' },
+        { en: 'Irregular: go→went, eat→ate, see→saw, have→had', es: 'Irregulares: cambian de forma', example: '"We went to a party last night."' },
+        { en: 'Enjoy / Travel / Meet / Buy / Come', es: 'Disfrutar / Viajar / Conocer / Comprar / Venir', example: '"I enjoyed the concert."' },
+      ],
+      grammar: {
+        title: 'Past Simple — Regular, Irregular, Negativo',
+        rules: [
+          { title: 'Regulares: verbo + -ED',
+            formula: 'work→worked | play→played | study→studied | travel→travelled',
+            examples: [
+              { en: 'I worked until 6 PM yesterday.', es: 'Trabajé hasta las 6 PM ayer.' },
+              { en: 'She studied all weekend.', es: 'Ella estudió todo el fin de semana.' },
+            ]},
+          { title: 'Irregulares más importantes',
+            formula: 'go→went | eat→ate | have→had | see→saw | come→came | buy→bought | get→got',
+            examples: [
+              { en: 'We went to a restaurant last night.', es: 'Fuimos a un restaurante anoche.' },
+              { en: 'I had a great time! She saw a good movie.', es: '¡Lo pasé genial! Ella vio una buena película.' },
+            ]},
+          { title: 'Negativo y preguntas con DID',
+            formula: 'I didn\'t + verb (base) | Did you + verb? → Yes, I did / No, I didn\'t',
+            examples: [
+              { en: 'I didn\'t go to the party. (NOT: I didn\'t went)', es: 'No fui a la fiesta.' },
+              { en: 'Did you eat breakfast? — No, I didn\'t.', es: '¿Desayunaste? — No.' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Escribe en inglés lo que hiciste ayer. Incluye al menos 5 actividades usando verbos regulares E irregulares.',
+        hint: 'Ejemplo: "Yesterday I woke up at 8 AM. I ate breakfast and then went to university. I studied for 3 hours and then met my friend..."'
+      }
+    },
+    {
+      id: 'a2_future', emoji: '🔮',
+      title: 'Future — Plans & Predictions', titleEs: 'Futuro — Planes y predicciones',
+      description: 'Habla del futuro con WILL y GOING TO.', tag: 'grammar', duration: '25 min', color: '#4ECDC4',
+      vocabulary: [
+        { en: 'Tomorrow / Next week / Next year', es: 'Mañana / La próxima semana / El próximo año', example: '"I\'m going to travel next summer."' },
+        { en: 'Plan / Hope / Expect / Want', es: 'Planear / Esperar / Planificar / Querer', example: '"I plan to study abroad."' },
+        { en: 'Maybe / Probably / Definitely / Never', es: 'Quizás / Probablemente / Definitivamente / Nunca', example: '"I will probably go to the gym."' },
+        { en: 'Soon / Later / In the future / Eventually', es: 'Pronto / Después / En el futuro / Eventualmente', example: '"She will come soon."' },
+      ],
+      grammar: {
+        title: 'GOING TO vs WILL — cuándo usar cada uno',
+        rules: [
+          { title: 'GOING TO — Planes ya decididos',
+            formula: 'I am/is/are going to + verb (tengo un plan concreto ya)',
+            examples: [
+              { en: 'I\'m going to study Systems Engineering.', es: 'Voy a estudiar Ingeniería en Sistemas. (ya lo decidí)' },
+              { en: 'She\'s going to travel to Spain next summer.', es: 'Ella va a viajar a España el próximo verano.' },
+            ]},
+          { title: 'WILL — Decisión espontánea o predicción',
+            formula: 'I will + verb (decisión en el momento / predicción del futuro)',
+            examples: [
+              { en: 'I\'ll help you! (I just decided right now)', es: '¡Te ayudo! (decisión en este momento)' },
+              { en: 'I think it will rain tomorrow. (prediction)', es: 'Creo que va a llover mañana. (predicción)' },
+              { en: 'In 10 years, AI will change everything.', es: 'En 10 años, la IA cambiará todo.' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Escribe: (1) 3 planes que tienes para tu futuro (usa going to). (2) 2 predicciones sobre tecnología o el mundo (usa will). (3) Algo que decidiste hacer ahora mismo (usa will).',
+        hint: 'Ejemplo: "I am going to graduate next year. Technology will change medicine completely. — Ok, I\'ll send that email right now!"'
+      }
+    },
+  ],
+
+  B1: [
+    {
+      id: 'b1_present_perfect', emoji: '✨',
+      title: 'Present Perfect — Experience', titleEs: 'Presente perfecto — Experiencias de vida',
+      description: 'Habla de experiencias usando HAVE + participio pasado.', tag: 'grammar', duration: '30 min', color: '#6C63FF',
+      vocabulary: [
+        { en: 'Have you ever...?', es: '¿Alguna vez has...?', example: '"Have you ever eaten sushi?"' },
+        { en: 'I have never...', es: 'Nunca he...', example: '"I have never been to Paris."' },
+        { en: 'Already / Yet / Just / Still', es: 'Ya / Todavía / Recién / Aún', example: '"I\'ve already finished my homework."' },
+        { en: 'Past Participles: been, done, eaten, seen, met, written, won', es: 'Participios irregulares comunes', example: '"I\'ve seen that movie twice."' },
+        { en: 'For (duration) / Since (starting point)', es: 'Por (duración) / Desde (punto de inicio)', example: '"She\'s worked here for 3 years."' },
+      ],
+      grammar: {
+        title: 'Present Perfect: HAVE + Past Participle',
+        rules: [
+          { title: 'Forma básica',
+            formula: 'I/You/We/They HAVE + p.p. | He/She/It HAS + p.p.',
+            examples: [
+              { en: 'I have visited 5 countries.', es: 'He visitado 5 países.' },
+              { en: 'She has lived here for 3 years.', es: 'Ella ha vivido aquí por 3 años.' },
+            ]},
+          { title: 'EVER / NEVER — experiencias de vida',
+            formula: 'Have you EVER + p.p.? | I have NEVER + p.p.',
+            examples: [
+              { en: 'Have you ever tried Indian food? — Yes, I have!', es: '¿Has probado comida india? — ¡Sí!' },
+              { en: 'I have never broken a bone.', es: 'Nunca me he roto un hueso.' },
+            ]},
+          { title: 'FOR vs SINCE',
+            formula: 'FOR + duración (for 2 years) | SINCE + punto de inicio (since 2022)',
+            examples: [
+              { en: 'I have studied English for 2 years.', es: 'He estudiado inglés por 2 años.' },
+              { en: 'She has lived here since she was a child.', es: 'Ella ha vivido aquí desde niña.' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Escribe: (1) 3 experiencias que has tenido en tu vida (I have...). (2) 2 cosas que nunca has hecho pero quieres hacer. (3) Pregúntale algo al tutor usando "Have you ever...?"',
+        hint: 'Ejemplo: "I have visited three countries. I have never eaten Korean food, but I want to try it. Have you ever been to Latin America?"'
+      }
+    },
+    {
+      id: 'b1_conditionals', emoji: '🤔',
+      title: 'Conditionals — If Clauses', titleEs: 'Condicionales — Oraciones con "Si"',
+      description: 'Expresa condiciones reales e hipotéticas.', tag: 'grammar', duration: '35 min', color: '#FF6B6B',
+      vocabulary: [
+        { en: 'If / Unless / As long as', es: 'Si / A menos que / Mientras que', example: '"If it rains, I will stay home."' },
+        { en: 'Would / Could / Might', es: 'Condicional modal (habría, podría, tal vez)', example: '"If I had more time, I would learn Japanese."' },
+        { en: '1st Conditional: possible/real', es: '1er Condicional: situaciones posibles y reales', example: '"If I pass the exam, I will celebrate."' },
+        { en: '2nd Conditional: hypothetical/imaginary', es: '2do Condicional: situaciones imaginarias', example: '"If I were a superhero, I would fly."' },
+      ],
+      grammar: {
+        title: '1st and 2nd Conditionals',
+        rules: [
+          { title: '1st Conditional — Real y probable',
+            formula: 'If + Present Simple, WILL + verb (situación que puede pasar)',
+            examples: [
+              { en: 'If I study hard, I will pass the exam.', es: 'Si estudio duro, pasaré el examen.' },
+              { en: 'If it doesn\'t rain, we\'ll go to the beach.', es: 'Si no llueve, iremos a la playa.' },
+              { en: 'What will you do if you don\'t get the job?', es: '¿Qué harás si no obtienes el trabajo?' },
+            ]},
+          { title: '2nd Conditional — Hipotético e imaginario',
+            formula: 'If + Past Simple, WOULD + verb (situación imaginaria, no real ahora)',
+            examples: [
+              { en: 'If I were a millionaire, I would travel the world.', es: 'Si fuera millonario, viajaría por el mundo.' },
+              { en: 'If I could code anything, I would build a learning AI.', es: 'Si pudiera programar cualquier cosa, haría una IA de aprendizaje.' },
+              { en: '⚠️ Use WERE (not was) for all persons in 2nd conditional.', es: '⚠️ Se usa WERE para todas las personas, no was.' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Responde estas 3 preguntas en inglés: (1) "What will you do if you graduate with honors?" (2) "If you could live in any country, where would you live and why?" (3) "What will happen if AI becomes smarter than humans?"',
+        hint: 'Usa: If I graduate..., I will... | If I could live..., I would choose... | If AI becomes..., it will...'
+      }
+    },
+    {
+      id: 'b1_phrasal', emoji: '🗣️',
+      title: 'Phrasal Verbs — Everyday English', titleEs: 'Verbos frasales — Inglés cotidiano',
+      description: 'Los phrasal verbs más usados en conversaciones reales.', tag: 'vocabulary', duration: '25 min', color: '#4ECDC4',
+      vocabulary: [
+        { en: 'Give up', es: 'Rendirse / Dejar de hacer algo', example: '"Don\'t give up on your dreams!"' },
+        { en: 'Figure out', es: 'Resolver / Descubrir', example: '"I can\'t figure out this bug in my code."' },
+        { en: 'Come up with', es: 'Ocurrirse una idea / Idear', example: '"She came up with a brilliant solution."' },
+        { en: 'Run out of', es: 'Quedarse sin algo', example: '"We ran out of coffee. I need to buy more."' },
+        { en: 'Get along with', es: 'Llevarse bien con', example: '"I get along well with my teammates."' },
+        { en: 'Put off', es: 'Posponer / Procrastinar', example: '"Stop putting off your assignments!"' },
+        { en: 'Look up', es: 'Buscar (diccionario/internet)', example: '"Just look it up on Google."' },
+        { en: 'Take care of / Break down / Log in', es: 'Cuidar / Fallar/romperse / Iniciar sesión', example: '"My laptop broke down yesterday."' },
+      ],
+      grammar: {
+        title: 'Phrasal Verbs: Separables vs Inseparables',
+        rules: [
+          { title: 'Separables: el objeto puede ir en medio',
+            formula: 'Turn off the TV = Turn the TV off = Turn IT off (con pronombres, siempre en medio)',
+            examples: [
+              { en: 'Turn off the lights → Turn the lights off → Turn them off ✓', es: 'Apaga las luces / Apágalas' },
+              { en: 'I need to figure out this problem → figure it out ✓', es: 'Necesito resolver este problema.' },
+            ]},
+          { title: 'Inseparables: el objeto SIEMPRE va después',
+            formula: 'look after + [person] → NEVER separate them',
+            examples: [
+              { en: 'I look after my sister. ✓ (NOT: I look my sister after ✗)', es: 'Cuido a mi hermana.' },
+              { en: 'She gets along with everyone at work.', es: 'Ella se lleva bien con todos en el trabajo.' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Escribe 6 oraciones usando phrasal verbs diferentes de la lección. Habla de situaciones reales de tu vida (estudios, tecnología, amistades).',
+        hint: 'Ejemplo: "I sometimes put off my coding assignments. I always figure out problems eventually. I ran out of ideas for my project..."'
+      }
+    },
+    {
+      id: 'b1_opinions', emoji: '💬',
+      title: 'Expressing Opinions & Debate', titleEs: 'Expresar opiniones y debatir',
+      description: 'Expresa, defiende y contrasta opiniones con fluidez.', tag: 'communication', duration: '30 min', color: '#FFE66D',
+      vocabulary: [
+        { en: 'In my opinion / I think / I believe / I feel', es: 'En mi opinión / Creo / Considero / Siento', example: '"In my opinion, AI will revolutionize education."' },
+        { en: 'I agree / I disagree / I\'m not sure about that', es: 'Estoy de acuerdo / No estoy de acuerdo / No estoy seguro', example: '"I agree with you on that point."' },
+        { en: 'However / Although / Despite / On the contrary', es: 'Sin embargo / Aunque / A pesar de / Al contrario', example: '"However, there are some serious concerns."' },
+        { en: 'On one hand... on the other hand...', es: 'Por un lado... por otro lado...', example: '"On one hand it\'s useful; on the other, it\'s risky."' },
+        { en: 'That\'s a good point / Fair enough / That said...', es: 'Buen punto / Es justo / Dicho esto...', example: '"That\'s a good point! I hadn\'t thought of that."' },
+      ],
+      grammar: {
+        title: 'Conectores de opinión y contraste',
+        rules: [
+          { title: 'Estructura de un argumento',
+            formula: 'Opinion → Evidence → Counterargument → Conclusion',
+            examples: [
+              { en: 'I think AI is useful. For example, it helps doctors diagnose diseases. However, some people worry about privacy. Overall, the benefits outweigh the risks.', es: 'Creo que la IA es útil. Por ejemplo, ayuda a los médicos. Sin embargo, hay preocupaciones de privacidad. En general, los beneficios superan los riesgos.' },
+              { en: 'Although social media can be addictive, it connects people worldwide.', es: 'Aunque las redes sociales pueden ser adictivas, conectan a personas en todo el mundo.' },
+            ]}
+        ]
+      },
+      practice: {
+        prompt: '✍️ Escribe tu opinión sobre este tema (mínimo 5 oraciones): "Should all university students be required to learn programming?" Usa conectores de opinión y contraste.',
+        hint: 'Estructura: I think... / For example... / However... / On the other hand... / In conclusion, I believe...'
+      }
+    },
+  ]
+};
+</script>
+
+<!-- ══════════════════════════════════
+     APP LOGIC
+══════════════════════════════════ -->
+<script>
+// ── STATE ──
+let currentLevel = 'A1';
+let currentLesson = null;
+let previousView = 'dashboardView';
+let chatContext = null;
+let chatHistory = [];
+let apiKey = '';
+let completedLessons = JSON.parse(localStorage.getItem('englishAI_completed') || '[]');
+
+// ── INIT ──
+window.onload = () => {
+  const saved = localStorage.getItem('englishAI_apiKey');
+  if (saved) { apiKey = saved; showApp(); }
+};
+
+function startApp(e) {
+  e.preventDefault();
+  const key = document.getElementById('apiKey').value.trim();
+  if (!key.startsWith('sk-')) {
+    showError('La API key debe comenzar con "sk-". Verifica que la copiaste completa desde platform.openai.com');
+    return;
+  }
+  apiKey = key;
+  localStorage.setItem('englishAI_apiKey', key);
+  showApp();
+}
+
+function showApp() {
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('mainApp').classList.add('active');
+  renderDashboard();
+}
+
+function resetApiKey() {
+  if (confirm('¿Deseas cambiar tu API Key de OpenAI?')) {
+    localStorage.removeItem('englishAI_apiKey');
+    location.reload();
+  }
+}
+
+// ── LEVEL ──
+function setLevel(level, btn) {
+  currentLevel = level;
+  document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const info = {
+    A1: ['🌱 Nivel A1 — Básico', 'Aprende los fundamentos del inglés: saludos, vocabulario esencial y gramática básica'],
+    A2: ['🌿 Nivel A2 — Elemental', 'Consolida tu inglés con tiempos verbales y rutinas cotidianas'],
+    B1: ['🌳 Nivel B1 — Intermedio', 'Domina tiempos complejos, condicionales y expresión avanzada']
+  };
+  document.getElementById('levelTitle').textContent = info[level][0];
+  document.getElementById('levelDesc').textContent = info[level][1];
+  showView('dashboardView');
+  renderDashboard();
+}
+
+// ── DASHBOARD ──
+function renderDashboard() {
+  const grid = document.getElementById('lessonsGrid');
+  grid.innerHTML = LESSONS[currentLevel].map(lesson => {
+    const done = completedLessons.includes(lesson.id);
+    return `<div class="lesson-card ${done ? 'completed' : ''}" onclick="openLesson('${lesson.id}')">
+      <div class="lesson-card-accent" style="background:linear-gradient(90deg,${lesson.color},${lesson.color}66)"></div>
+      ${done ? '<div class="completed-badge">✓</div>' : ''}
+      <div class="lesson-emoji">${lesson.emoji}</div>
+      <h3>${lesson.title}</h3>
+      <p>${lesson.description}</p>
+      <div class="lesson-meta">
+        <span class="lesson-tag tag-${lesson.tag}">${tagLabel(lesson.tag)}</span>
+        <span class="lesson-duration">⏱ ${lesson.duration}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function tagLabel(t) {
+  return { grammar:'Gramática', vocabulary:'Vocabulario', phrases:'Frases', communication:'Comunicación' }[t] || t;
+}
+
+// ── LESSON ──
+function openLesson(id) {
+  const all = Object.values(LESSONS).flat();
+  const lesson = all.find(l => l.id === id);
+  if (!lesson) return;
+  currentLesson = lesson;
+  previousView = 'dashboardView';
+
+  document.getElementById('lessonTitle').textContent = `${lesson.emoji} ${lesson.title}`;
+  document.getElementById('lessonSubtitle').textContent = lesson.titleEs;
+
+  const done = completedLessons.includes(lesson.id);
+  document.getElementById('lessonContent').innerHTML = `
+    <div class="lesson-section">
+      <h3><span class="section-icon" style="background:#EEF2FF">📚</span>Vocabulario esencial</h3>
+      <table class="vocab-table">
+        <thead><tr><th>English 🇬🇧</th><th>Español 🇲🇽</th><th>Ejemplo en contexto</th></tr></thead>
+        <tbody>${lesson.vocabulary.map(v=>`
+          <tr>
+            <td class="vocab-en">${v.en}</td>
+            <td class="vocab-es">${v.es}</td>
+            <td class="vocab-example">${v.example}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="lesson-section">
+      <h3><span class="section-icon" style="background:#FFF0F5">📖</span>${lesson.grammar.title}</h3>
+      ${lesson.grammar.rules.map(rule=>`
+        <div class="grammar-rule">
+          <div class="rule-title">📌 ${rule.title}</div>
+          <div class="rule-formula">${rule.formula}</div>
+          <ul class="grammar-examples">
+            ${rule.examples.map(ex=>`
+              <li>
+                <span class="en">🇬🇧 ${ex.en}</span>
+                <span class="es">🇲🇽 ${ex.es}</span>
+              </li>`).join('')}
+          </ul>
+        </div>`).join('')}
+    </div>
+
+    <div class="lesson-section">
+      <h3><span class="section-icon" style="background:#F0FFF4">✍️</span>Práctica escrita</h3>
+      <div class="practice-area">
+        <div class="practice-prompt">${lesson.practice.prompt}</div>
+        <div class="practice-hint">💡 ${lesson.practice.hint}</div>
+        <textarea class="practice-input" id="practiceInput" placeholder="Write your answer here in English..." rows="4"></textarea>
+        <br>
+        <button class="practice-btn" onclick="checkWithAI()">✨ Revisar con IA (corrección instantánea)</button>
+        <div class="practice-feedback" id="practiceFeedback"></div>
+      </div>
+    </div>
+
+    <div class="lesson-actions">
+      <button class="complete-btn ${done?'done':''}" id="completeBtn" onclick="markComplete('${lesson.id}')">
+        ${done ? '✓ Lección completada' : '✅ Marcar como completada'}
+      </button>
+      <button class="chat-lesson-btn" onclick="openChat('${lesson.id}')">
+        💬 Practicar con el tutor IA
+      </button>
+    </div>`;
+
+  showView('lessonView');
+}
+
+async function checkWithAI() {
+  const input = document.getElementById('practiceInput').value.trim();
+  if (!input) { showError('Por favor escribe tu respuesta antes de revisar.'); return; }
+
+  const fb = document.getElementById('practiceFeedback');
+  fb.style.display = 'block';
+  fb.className = 'practice-feedback';
+  fb.textContent = '⏳ Analizando tu respuesta...';
+
+  const prompt = `A Spanish-speaking student learning English completed this writing exercise.
+
+Exercise: "${currentLesson.practice.prompt}"
+Student's answer: "${input}"
+
+Give brief feedback (3-4 sentences) IN SPANISH:
+1. Highlight what's correct (strengths)
+2. Gently correct any grammar/vocabulary mistakes (show correct version)
+3. One short encouragement
+
+Start with ✅ if mostly correct, or 💡 if corrections needed. Be warm and encouraging.`;
+
+  try {
+    const r = await callOpenAI([{role:'user', content:prompt}],
+      'You are a warm, encouraging English teacher giving written feedback in Spanish.');
+    fb.className = 'practice-feedback correct';
+    fb.innerHTML = r.replace(/\n/g,'<br>');
+  } catch(err) {
+    fb.className = 'practice-feedback error';
+    fb.textContent = '⚠️ Error: ' + (err.message || 'No se pudo conectar con la IA.');
+  }
+}
+
+function markComplete(id) {
+  if (!completedLessons.includes(id)) {
+    completedLessons.push(id);
+    localStorage.setItem('englishAI_completed', JSON.stringify(completedLessons));
+  }
+  document.getElementById('completeBtn').textContent = '✓ Lección completada';
+  document.getElementById('completeBtn').classList.add('done');
+}
+
+// ── CHAT ──
+function openChat(lessonId = null) {
+  const all = Object.values(LESSONS).flat();
+  chatContext = lessonId ? all.find(l => l.id === lessonId) : null;
+  previousView = lessonId ? 'lessonView' : 'dashboardView';
+
+  document.getElementById('chatSubtitle').textContent = chatContext
+    ? `Practicando: ${chatContext.title}` : 'Conversación libre en inglés';
+  document.getElementById('chatContextTag').textContent = chatContext
+    ? `📖 ${chatContext.emoji} ${chatContext.titleEs}` : '💬 Free Chat';
+
+  // Chips
+  const chips = document.getElementById('suggestionChips');
+  chips.style.display = 'flex';
+  chips.innerHTML = chatContext ? `
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Explain this grammar to me</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Give me a practice exercise</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Let's have a conversation about this topic</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">I have a question</span>
+  ` : `
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Hello! Let's practice English</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Give me a fun topic to discuss</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Check my English level please</span>
+  `;
+
+  // Welcome message if no history
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML = '';
+  chatHistory = [];
+
+  const welcome = chatContext
+    ? `Hello! I'm Alex, your English tutor 😊 I can see you're working on <strong>"${chatContext.title}"</strong> — great choice! Let's practice together. Would you like me to explain the grammar, give you an exercise, or just have a conversation about this topic? What works best for you?`
+    : `Hello! I'm Alex, your personal English tutor 😊 I use the communicative method — that means we'll practice through real conversation, I'll gently correct your mistakes, and help you build confidence step by step.<br><br>Let's start! Tell me a little about yourself in English: What's your name? What do you study? And why do you want to improve your English? 🌍`;
+
+  appendMessage('assistant', welcome);
+  showView('chatView');
+  document.getElementById('chatInput').focus();
+}
+
+function getSystemPrompt() {
+  const ctx = chatContext
+    ? `The student is practicing this lesson: "${chatContext.title}" (${chatContext.titleEs}). Key vocabulary: ${chatContext.vocabulary.map(v=>v.en).join(', ')}. Grammar focus: ${chatContext.grammar.title}. Keep conversation focused on this lesson's content.`
+    : `The student is having a free conversation practice session.`;
+
+  return `You are Alex, a friendly, patient, and encouraging English tutor for Spanish-speaking university students. Your teaching philosophy:
+
+METHODS:
+- Communicative Language Teaching (CLT): focus on real communication, not just rules
+- Krashen's Input Hypothesis: provide comprehensible input slightly above their level (i+1)
+- Spaced Repetition: occasionally reference vocabulary/grammar from earlier in the conversation
+- Scaffolded Learning: build on what they know, gradually increase complexity
+- Socratic method: ask questions to make students think, don't just give answers
+
+CORRECTION STYLE (very important):
+- NEVER interrupt mid-sentence to correct; wait until they finish
+- Model the correct form naturally: "Nice! And just to note — we say '[correct]' instead of '[error]'. [Brief reason]. Anyway, [continue conversation]..."
+- Celebrate ALL attempts, even imperfect ones
+- If they write in Spanish, gently say: "I understood you! Now try to say that in English — you can do it! 💪"
+
+CONVERSATION STYLE:
+- Keep responses to 2-4 sentences usually (don't lecture)
+- Always end with a question to keep conversation going
+- Use relatable examples for a university Systems Engineering student
+- Be enthusiastic and warm
+
+${ctx}`;
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+
+  document.getElementById('suggestionChips').style.display = 'none';
+  appendMessage('user', text);
+  chatHistory.push({ role: 'user', content: text });
+
+  // Typing indicator
+  const msgs = document.getElementById('chatMessages');
+  const typing = document.createElement('div');
+  typing.id = 'typing';
+  typing.className = 'message assistant';
+  typing.innerHTML = `<div class="msg-avatar">🤖</div>
+    <div class="typing-indicator">
+      <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+    </div>`;
+  msgs.appendChild(typing);
+  scrollChat();
+  document.getElementById('sendBtn').disabled = true;
+
+  try {
+    const response = await callOpenAI(chatHistory, getSystemPrompt());
+    document.getElementById('typing')?.remove();
+    appendMessage('assistant', response);
+    chatHistory.push({ role: 'assistant', content: response });
+    if (chatHistory.length > 24) chatHistory = chatHistory.slice(-24);
+  } catch(err) {
+    document.getElementById('typing')?.remove();
+    showError(err.message || 'Error de conexión. Verifica tu API key y tu conexión a internet.');
+  }
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('chatInput').focus();
+}
+
+function sendSuggestion(text) {
+  document.getElementById('chatInput').value = text;
+  sendMessage();
+}
+
+function handleEnter(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function appendMessage(role, text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  div.innerHTML = `
+    <div class="msg-avatar">${role === 'user' ? '👤' : '🤖'}</div>
+    <div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(div);
+  scrollChat();
+}
+
+function scrollChat() {
+  const m = document.getElementById('chatMessages');
+  m.scrollTop = m.scrollHeight;
+}
+
+// ── OPENAI API ──
+async function callOpenAI(messages, systemPrompt) {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'system', content: systemPrompt }, ...messages],
+      max_tokens: 500,
+      temperature: 0.75
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    if (res.status === 401) throw new Error('API key inválida o expirada. Ve a ⚙️ para actualizarla.');
+    if (res.status === 429) throw new Error('Límite de uso alcanzado. Espera un momento e intenta de nuevo.');
+    throw new Error(err.error?.message || `Error HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+// ── NAVIGATION ──
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goToDashboard() {
+  showView('dashboardView');
+  renderDashboard();
+}
+
+function goBack() {
+  if (previousView === 'lessonView' && currentLesson) {
+    showView('lessonView');
+  } else {
+    goToDashboard();
+  }
+}
+
+// ── ERROR TOAST ──
+function showError(msg) {
+  const t = document.getElementById('errorToast');
+  t.textContent = '⚠️ ' + msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 6000);
+}
+</script>
+</body>
+</html>
