@@ -186,6 +186,70 @@
     /* Toast */
     .error-toast{position:fixed;bottom:20px;right:20px;background:#991B1B;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;z-index:1000;display:none;max-width:320px;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 
+    /* ── TOPICS ── */
+    .topics-nav-btn{padding:7px 14px;background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;border:none;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;transition:transform .2s}
+    .topics-nav-btn:hover{transform:scale(1.05)}
+    .topics-filters{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;align-items:center}
+    .filter-btn{padding:6px 16px;border-radius:20px;border:2px solid var(--border);background:#fff;cursor:pointer;font-weight:600;font-size:13px;color:var(--text-muted);transition:all .2s}
+    .filter-btn.active{color:#fff}
+    .filter-btn.all.active{background:var(--primary);border-color:var(--primary)}
+    .filter-btn.tech.active{background:#0EA5E9;border-color:#0EA5E9}
+    .filter-btn.psychology.active{background:#8B5CF6;border-color:#8B5CF6}
+    .topics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+    .topic-card{background:#fff;border-radius:var(--radius);padding:22px;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:var(--shadow);border:2px solid transparent;position:relative;overflow:hidden}
+    .topic-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(0,0,0,.12);border-color:var(--card-color,var(--primary))}
+    .tc-bar{position:absolute;top:0;left:0;right:0;height:4px}
+    .topic-card .tc-emoji{font-size:32px;margin-bottom:10px}
+    .topic-card h3{font-size:15px;font-weight:700;margin-bottom:6px;line-height:1.4}
+    .topic-card p{font-size:12px;color:var(--text-muted);line-height:1.5;margin-bottom:12px}
+    .tc-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .cat-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+    .cat-tech{background:#E0F2FE;color:#0369A1}
+    .cat-psychology{background:#EDE9FE;color:#6D28D9}
+    .lvl-badge{padding:3px 8px;border-radius:8px;font-size:11px;font-weight:700;background:var(--bg);color:var(--text-muted)}
+    .read-time{font-size:11px;color:var(--text-muted);margin-left:auto}
+
+    /* ARTICLE VIEW */
+    .article-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+    .article-body{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
+    .article-listen-bar{background:linear-gradient(135deg,#1E40AF,#3B82F6);padding:14px 22px;display:flex;align-items:center;gap:12px;color:#fff}
+    .listen-btn{padding:8px 18px;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);color:#fff;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .listen-btn:hover{background:rgba(255,255,255,.35)}
+    .listen-progress{flex:1;height:4px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden}
+    .listen-progress-bar{height:100%;background:#fff;border-radius:2px;width:0;transition:width .3s}
+    .listen-label{font-size:12px;opacity:.85;white-space:nowrap}
+    .article-content{padding:28px;font-size:15px;line-height:1.85;color:#374151}
+    .article-content p{margin-bottom:14px}
+    .article-content p:last-child{margin-bottom:0}
+    .highlight-word{background:#FEF3C7;border-radius:3px;padding:0 3px;font-weight:600;cursor:help}
+
+    /* VOCAB SECTION */
+    .vocab-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .vocab-chip{padding:6px 14px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:13px;cursor:pointer;transition:all .2s;position:relative}
+    .vocab-chip:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .vocab-chip .chip-def{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1A1A2E;color:#fff;padding:8px 12px;border-radius:10px;font-size:12px;white-space:nowrap;z-index:10;pointer-events:none}
+    .vocab-chip:hover .chip-def{display:block}
+
+    /* COMPREHENSION */
+    .comp-section{background:#fff;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:18px}
+    .comp-section h3{font-size:16px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+    .comp-q{margin-bottom:18px;padding:16px;background:var(--bg);border-radius:12px}
+    .comp-q-text{font-weight:600;font-size:14px;margin-bottom:10px}
+    .comp-input{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:14px;outline:none;transition:border-color .2s;resize:none;font-family:inherit;min-height:70px}
+    .comp-input:focus{border-color:var(--primary)}
+    .comp-check-btn{padding:8px 16px;background:var(--primary);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;margin-top:8px;transition:background .2s}
+    .comp-check-btn:hover{background:var(--primary-dark)}
+    .comp-feedback{margin-top:8px;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6;display:none}
+    .comp-feedback.ok{background:#F0FFF4;color:#065F46;border:1px solid #A7F3D0}
+    .comp-feedback.err{background:#FFF5F5;color:#991B1B;border:1px solid #FCA5A5}
+
+    /* TOPIC DISCUSS ACTIONS */
+    .topic-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .tdiscuss-spk{padding:13px 24px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;flex:1;min-width:160px}
+    .tdiscuss-spk:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(16,185,129,.3)}
+    .tdiscuss-chat{padding:13px 24px;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;flex:1;min-width:160px}
+    .tdiscuss-chat:hover{transform:translateY(-2px)}
+
     @media(max-width:640px){
       .lessons-grid{grid-template-columns:1fr}
       .topnav{height:auto;padding:8px 14px;flex-wrap:wrap;gap:8px}
@@ -234,6 +298,7 @@
       <button class="level-btn" onclick="setLevel('C2',this)">C2</button>
     </div>
     <div class="nav-right">
+      <button class="topics-nav-btn" onclick="openTopics()">📖 Topics</button>
       <button class="speak-nav-btn" onclick="openSpeaking(null)">🎙️ Speak</button>
       <button class="chat-nav-btn" onclick="openChat(null)">💬 Chat</button>
       <button class="cfg-btn" onclick="resetApiKey()" title="Cambiar API Key">⚙️</button>
@@ -330,6 +395,32 @@
         </div>
       </div>
     </div>
+    <!-- TOPICS DASHBOARD -->
+    <div class="view" id="topicsView">
+      <div class="dash-header">
+        <h2>📖 Reading Topics</h2>
+        <p>Lee artículos en inglés sobre Tech y Psicología, escúchalos y debátelos con Alex</p>
+      </div>
+      <div class="topics-filters">
+        <button class="filter-btn all active" onclick="filterTopics('all',this)">🌐 Todos</button>
+        <button class="filter-btn tech" onclick="filterTopics('tech',this)">💻 Tech</button>
+        <button class="filter-btn psychology" onclick="filterTopics('psychology',this)">🧠 Psychology</button>
+      </div>
+      <div class="topics-grid" id="topicsGrid"></div>
+    </div>
+
+    <!-- ARTICLE VIEW -->
+    <div class="view" id="articleView">
+      <div class="view-header">
+        <button class="back-btn" onclick="goToTopics()">← Topics</button>
+        <div>
+          <div class="view-title" id="articleTitle"></div>
+          <div class="article-meta" id="articleMeta"></div>
+        </div>
+      </div>
+      <div id="articleContent"></div>
+    </div>
+
   </div>
 </div>
 <div class="error-toast" id="errorToast"></div>
@@ -500,6 +591,306 @@ const LESSONS = {
      practice:{q:'✍️ Escribe un argumento persuasivo de 6-8 oraciones sobre este tema: "Universities should make English proficiency mandatory for all graduates." Usa: concesión/refutación, retórica, y regla de tres.',h:'While some may argue... / However, the data clearly shows... / We need this for our careers, for our country, and for our future.'}}
   ]
 };
+
+// ═══════════════════════════
+//  TOPICS DATA
+// ═══════════════════════════
+const TOPICS = [
+  {
+    id:'t_ai_learning', category:'tech', emoji:'🤖', level:'B1–B2', readTime:'4 min',
+    title:'How AI Is Changing the Way We Learn',
+    summary:'Artificial intelligence is transforming education — but is it all positive?',
+    vocab:[
+      {w:'personalized',def:'adapted specifically for one person'},
+      {w:'algorithm',def:'a set of rules a computer follows to solve a problem'},
+      {w:'engagement',def:'the level of interest and involvement someone has'},
+      {w:'retention',def:'the ability to remember information long-term'},
+      {w:'adaptive',def:'able to change according to different needs or situations'},
+      {w:'bias',def:'an unfair preference for or against something'}
+    ],
+    text:`Artificial intelligence is no longer science fiction. Today, it is entering classrooms, apps, and online platforms, fundamentally changing how people learn new skills and languages.
+
+Traditional education often follows a one-size-fits-all approach. Every student in a classroom receives the same lesson at the same speed. However, AI-powered tools can adapt to each learner individually. They track your progress, identify your weak areas, and adjust the difficulty of exercises in real time. This is called adaptive learning, and research suggests it can significantly improve both engagement and long-term retention.
+
+Language learning apps like Duolingo already use machine learning algorithms to decide which words you need to practice most. Instead of reviewing vocabulary you already know well, the system focuses your energy where it matters most. Studies show that spaced repetition — reviewing information at specific intervals — can improve memory by up to 80% compared to traditional study methods.
+
+However, AI in education is not without problems. One major concern is bias. If an AI system is trained on data that does not represent all cultures and backgrounds equally, it may disadvantage certain groups of learners. Another issue is screen dependency. When people rely too heavily on technology to guide their learning, they may struggle to study independently.
+
+Despite these challenges, the potential is enormous. Imagine having a personal tutor available 24 hours a day, seven days a week, who never gets tired and always adjusts to your needs. That is increasingly the reality for millions of learners around the world.
+
+The question is not whether AI will change education — it already has. The real question is how we can use it wisely and fairly.`,
+    questions:[
+      'What is adaptive learning, and why is it considered better than traditional classroom teaching?',
+      'What are two problems or risks of using AI in education? Do you agree these are serious concerns?',
+      'Do you currently use any AI tools to learn English or study? How has the experience been?'
+    ]
+  },
+  {
+    id:'t_cybersecurity', category:'tech', emoji:'🔐', level:'B1–B2', readTime:'4 min',
+    title:'Cybersecurity: Why Your Password Is Probably Weak',
+    summary:'Learn why most passwords fail and how hackers exploit them.',
+    vocab:[
+      {w:'breach',def:'an incident where private data is accessed without permission'},
+      {w:'credential',def:'username and password used to log into a system'},
+      {w:'phishing',def:'a trick where attackers pretend to be trustworthy to steal information'},
+      {w:'encrypt',def:'to convert data into a code to prevent unauthorized access'},
+      {w:'vulnerability',def:'a weakness in a system that can be exploited'},
+      {w:'authentication',def:'the process of verifying who you are'}
+    ],
+    text:`Every year, billions of usernames and passwords are stolen in data breaches. Security experts warn that the majority of people are still using passwords that hackers can crack in seconds. Understanding why this happens — and what to do about it — is essential in today's digital world.
+
+The most common mistake is using short, simple passwords like "123456", "password", or your own name. Hackers use software that can try millions of combinations per second. A six-character password, even with numbers and letters, can be broken in less than one second using modern computers.
+
+Another widespread problem is password reuse. Many people use the same password for multiple accounts — their email, social media, and even their bank. When one site suffers a breach, attackers try those same credentials on hundreds of other services. This technique is called credential stuffing, and it is extremely effective.
+
+Phishing is another major threat. Attackers send fake emails or messages that look like they come from trusted companies. They direct you to a fake website that looks identical to the real one, where you unknowingly enter your login details. Even technically experienced users fall for these attacks.
+
+So what can you do? Security professionals recommend using a password manager, which creates and stores long, random, unique passwords for every account. Enabling two-factor authentication — where a second verification step is required — adds another layer of protection. And always check the website address carefully before entering any credentials.
+
+Cybersecurity is not just an IT problem. It is a personal responsibility. Every weak password is an open door.`,
+    questions:[
+      'What is credential stuffing, and why is reusing passwords so dangerous?',
+      'Have you or someone you know ever been the victim of a phishing attack or data breach? What happened?',
+      'What cybersecurity habits do you currently practice? What could you improve?'
+    ]
+  },
+  {
+    id:'t_algorithm', category:'tech', emoji:'📱', level:'B2', readTime:'5 min',
+    title:'The Algorithm That Decides What You See',
+    summary:'Social media algorithms shape your reality — here\'s how they work.',
+    vocab:[
+      {w:'feed',def:'the stream of content shown to you on social media'},
+      {w:'engagement',def:'interactions like likes, comments, and shares'},
+      {w:'filter bubble',def:'a situation where you only see content that confirms your views'},
+      {w:'amplify',def:'to make something louder or more powerful'},
+      {w:'polarization',def:'the division of people into opposing groups with extreme views'},
+      {w:'monetize',def:'to earn money from something'}
+    ],
+    text:`Every time you open Instagram, TikTok, YouTube, or Facebook, an algorithm immediately decides what you will see. These systems are not random. They are designed with one primary goal: to keep you on the platform as long as possible.
+
+The algorithm learns from your behavior. Every video you watch completely, every post you pause on, every comment you leave — all of this data teaches the system what type of content makes you react. And it learns fast. Within hours of creating a new account, algorithms already have a detailed model of your preferences.
+
+The problem is that the content that generates the most engagement is not always the most accurate, balanced, or healthy. Research consistently shows that outrage, fear, and controversy spread faster than calm, factual information. Because algorithms prioritize engagement, they tend to amplify emotionally charged content — regardless of whether it is true.
+
+This creates what researchers call filter bubbles. Over time, your feed becomes a mirror of your existing beliefs, showing you content that confirms what you already think and hiding perspectives that challenge you. Without realizing it, your view of the world becomes narrower.
+
+Some experts argue this contributes to political polarization, the spread of misinformation, and mental health problems, particularly among teenagers. Studies have linked heavy social media use to increased anxiety and depression, partly because algorithms tend to promote idealized, unrealistic images of life.
+
+However, others point out that algorithms also help people discover music they love, connect with communities worldwide, and access educational content they would never have found otherwise.
+
+The technology itself is neutral. What matters is who controls it — and what goals they are optimizing for.`,
+    questions:[
+      'In your own words, how does a social media algorithm decide what to show you?',
+      'Do you think you live inside a filter bubble? Give a specific example from your own experience.',
+      'Should governments regulate social media algorithms? What are the arguments for and against?'
+    ]
+  },
+  {
+    id:'t_opensource', category:'tech', emoji:'🌐', level:'B1–B2', readTime:'4 min',
+    title:'Open Source: How Volunteers Built the Internet',
+    summary:'The invisible software running the world was created for free — here\'s the story.',
+    vocab:[
+      {w:'source code',def:'the original programming instructions that make software work'},
+      {w:'collaborate',def:'to work together with others toward a shared goal'},
+      {w:'license',def:'legal permission that defines how software can be used or shared'},
+      {w:'repository',def:'a storage location for code, usually online'},
+      {w:'contribute',def:'to add something to a shared project'},
+      {w:'infrastructure',def:'the basic systems and structures that everything else depends on'}
+    ],
+    text:`You are probably using open source software right now without knowing it. The browser on your phone, the server running your favorite app, the operating system powering millions of computers worldwide — much of the digital infrastructure we rely on every day was created by volunteers who shared their work freely with the world.
+
+Open source means that the source code of a program is publicly available. Anyone can read it, modify it, and distribute it, usually under specific conditions defined in a license. This is the opposite of proprietary software, like Windows or Photoshop, where the code is secret and owned by a company.
+
+The open source movement began in the 1980s with programmer Richard Stallman, who believed that software should be free — not in terms of price, but in terms of freedom. His ideas inspired the development of Linux, an operating system created by Linus Torvalds in 1991. Today, Linux runs approximately 96% of the world's web servers.
+
+Thousands of developers around the world collaborate on open source projects through platforms like GitHub. They fix bugs, add features, and improve code — often during evenings and weekends, without financial compensation. They do it because they believe in the mission, want to improve their skills, or need the software themselves.
+
+Companies like Google, Microsoft, and Meta now contribute millions of dollars and thousands of working hours to open source projects. They have realized that the benefits — better, more secure software — outweigh the cost of giving code away for free.
+
+If you are studying Systems Engineering, learning to contribute to open source projects is one of the most valuable things you can do for your career.`,
+    questions:[
+      'What is the difference between open source and proprietary software? Give an example of each.',
+      'Why do you think developers contribute to open source projects without getting paid? Would you do it?',
+      'As a Systems Engineering student, how could contributing to open source projects help your career?'
+    ]
+  },
+  {
+    id:'t_quantum', category:'tech', emoji:'⚛️', level:'B2', readTime:'5 min',
+    title:'Quantum Computing: The Next Big Revolution',
+    summary:'Quantum computers could break encryption and solve problems impossible for normal computers.',
+    vocab:[
+      {w:'qubit',def:'the basic unit of quantum information, unlike a normal bit it can be 0 and 1 simultaneously'},
+      {w:'superposition',def:'the quantum state where something exists in multiple states at once'},
+      {w:'encryption',def:'converting information into code to protect it from unauthorized access'},
+      {w:'exponential',def:'growing extremely rapidly, multiplying by itself repeatedly'},
+      {w:'simulate',def:'to create a computer model that imitates a real system'},
+      {w:'entanglement',def:'a quantum phenomenon where two particles are connected regardless of distance'}
+    ],
+    text:`Regular computers — the ones in your phone, laptop, and the servers running the internet — work with bits. A bit is a tiny switch that is either off (0) or on (1). Every calculation, every image, every message is ultimately just billions of these switches flipping at incredible speed.
+
+Quantum computers work differently. Instead of bits, they use qubits, which can be 0, 1, or both at the same time — a phenomenon called superposition. This allows quantum computers to explore many possible solutions simultaneously, making them exponentially more powerful for certain types of problems.
+
+Consider the challenge of finding the prime factors of a very large number. A regular computer might take millions of years to solve this. A sufficiently powerful quantum computer could potentially do it in hours. This matters enormously because most modern encryption relies on exactly this difficulty — the assumption that factoring huge numbers is practically impossible.
+
+Quantum computers also promise to revolutionize drug discovery. They could simulate complex molecular interactions with perfect accuracy, helping scientists design new medicines in months rather than decades. Similarly, they could optimize supply chains, improve weather forecasting, and accelerate research in artificial intelligence.
+
+However, quantum computers are still in their early stages. They require temperatures colder than outer space to function. They make errors frequently and are extraordinarily difficult to build and maintain. Today's quantum computers are roughly where classical computers were in the 1950s.
+
+Companies like IBM, Google, and startups around the world are racing to build practical quantum computers. In 2019, Google claimed to have achieved "quantum supremacy" — performing a calculation that would take the world's most powerful supercomputer 10,000 years in just 200 seconds.
+
+The quantum era is coming. The question is when.`,
+    questions:[
+      'What is a qubit and how is it different from a normal bit? Why does this make quantum computers so powerful?',
+      'Why would quantum computing be a threat to current cybersecurity systems?',
+      'Which application of quantum computing do you find most exciting or important — and why?'
+    ]
+  },
+  {
+    id:'t_growth_mindset', category:'psychology', emoji:'🌱', level:'B1–B2', readTime:'4 min',
+    title:'Growth Mindset: The Belief That Changes Everything',
+    summary:'Psychologist Carol Dweck discovered that how you think about your abilities changes what you can achieve.',
+    vocab:[
+      {w:'mindset',def:'a set of beliefs and attitudes that shape how you see the world'},
+      {w:'fixed',def:'not able to change or develop'},
+      {w:'innate',def:'you are born with it, not something you learn'},
+      {w:'resilience',def:'the ability to recover quickly from difficulties'},
+      {w:'embrace',def:'to accept something enthusiastically'},
+      {w:'potential',def:'the capacity to develop or achieve something in the future'}
+    ],
+    text:`In the 1990s, psychologist Carol Dweck at Stanford University began studying why some students gave up when they failed while others became more motivated. What she discovered changed how the world thinks about learning and intelligence.
+
+Dweck found that people generally hold one of two beliefs about their abilities. Those with a fixed mindset believe that intelligence and talent are innate — you either have them or you do not. When these people encounter difficulty, they often interpret it as evidence that they are simply not smart or talented enough. They avoid challenges to prevent exposing their limitations.
+
+Those with a growth mindset, on the other hand, believe that abilities can be developed through dedication and hard work. For them, failure is not a sign of permanent inability — it is information. It tells them what to work on. Mistakes are not embarrassing; they are necessary steps in the learning process.
+
+The practical implications are significant. Students with a growth mindset consistently outperform peers with equal or even higher initial ability. They study more effectively, recover from setbacks faster, and tend to seek out increasingly difficult challenges. They also show greater resilience when facing criticism.
+
+Crucially, research shows that mindsets can change. Simply learning about the concept of neuroplasticity — the brain's ability to form new connections throughout life — can shift a person's mindset. Praising effort rather than intelligence ("you worked really hard" instead of "you're so smart") helps children develop growth mindsets.
+
+This matters in every area of life: education, career, relationships, and language learning. Every time you sit down to practice English and feel frustrated, you are experiencing exactly the moment where your mindset makes all the difference.`,
+    questions:[
+      'What is the key difference between a fixed mindset and a growth mindset? Give an example of each in action.',
+      'Think of a time when you had a fixed mindset about something. How did it affect your behavior and results?',
+      'How do you think having a growth mindset could specifically help you with learning English?'
+    ]
+  },
+  {
+    id:'t_procrastination', category:'psychology', emoji:'⏰', level:'B1–B2', readTime:'4 min',
+    title:'Why We Procrastinate (And What to Do About It)',
+    summary:'Procrastination is not laziness — it\'s an emotional regulation problem, and science has solutions.',
+    vocab:[
+      {w:'procrastinate',def:'to delay or postpone doing something despite knowing you should do it'},
+      {w:'avoidance',def:'the action of keeping away from something unpleasant'},
+      {w:'dopamine',def:'a brain chemical associated with pleasure and reward'},
+      {w:'temporal',def:'relating to time'},
+      {w:'self-compassion',def:'being kind to yourself rather than harshly self-critical'},
+      {w:'implementation intention',def:'a specific plan for when, where, and how to do something'}
+    ],
+    text:`Almost everyone procrastinates. Students delay starting assignments. Professionals postpone difficult emails. Even highly successful people struggle with tasks they find boring, anxiety-inducing, or overwhelming. For decades, researchers assumed procrastination was simply a time management problem. Now we know the truth is more complex — and more interesting.
+
+Procrastination is primarily an emotional regulation problem, not a productivity problem. When we face a task that generates negative feelings — stress, self-doubt, boredom, or fear of failure — our brain seeks relief. We switch to something more enjoyable, like checking social media or watching videos. This provides immediate relief from the discomfort, which reinforces the avoidance behavior. It is a cycle that gets stronger every time we repeat it.
+
+Neuroscience shows that procrastination involves a battle between two brain systems. The limbic system — ancient, emotional, and focused on immediate pleasure — often overpowers the prefrontal cortex, which is responsible for long-term planning and rational decision-making. Essentially, your emotional brain frequently wins against your logical brain.
+
+Temporal discounting also plays a role. Humans naturally value immediate rewards more than future rewards. The pleasure of watching a video now feels more real than the benefit of a good grade in three weeks.
+
+What actually helps? Research supports several strategies. Implementation intentions — making a specific plan of exactly when, where, and how you will do a task — significantly reduce procrastination. Breaking a large task into very small steps removes the feeling of overwhelm. And practicing self-compassion after procrastinating, rather than harsh self-criticism, actually makes you less likely to procrastinate in the future.
+
+Understanding why you procrastinate is the first step to changing it.`,
+    questions:[
+      'Why do researchers now say procrastination is an emotional problem, not a time management problem?',
+      'What triggers procrastination for you personally? Which emotion does it usually involve?',
+      'Which of the strategies mentioned in the article do you think would work best for you? Why?'
+    ]
+  },
+  {
+    id:'t_cognitive_biases', category:'psychology', emoji:'🧩', level:'B2', readTime:'5 min',
+    title:'Cognitive Biases: When Your Brain Lies to You',
+    summary:'Your brain takes mental shortcuts that lead to surprisingly irrational decisions.',
+    vocab:[
+      {w:'bias',def:'a tendency to think in a particular way that is often unfair or inaccurate'},
+      {w:'heuristic',def:'a mental shortcut that helps make decisions quickly'},
+      {w:'confirmation bias',def:'the tendency to search for information that confirms what you already believe'},
+      {w:'anchoring',def:'relying too heavily on the first piece of information you encounter'},
+      {w:'rational',def:'based on logic and reason rather than emotions'},
+      {w:'overestimate',def:'to think something is larger, better, or more important than it really is'}
+    ],
+    text:`We like to think of ourselves as rational beings who make decisions based on logic and evidence. But decades of research in psychology and behavioral economics have revealed an uncomfortable truth: our brains are full of systematic errors called cognitive biases that lead us to make irrational decisions — often without realizing it.
+
+Cognitive biases are mental shortcuts, or heuristics, that evolved to help our ancestors make fast decisions with limited information. In many situations they work well. But in complex modern life, they frequently lead us astray.
+
+Confirmation bias is one of the most powerful. We naturally search for, remember, and give more weight to information that confirms our existing beliefs. If you believe that a particular programming language is superior, you will unconsciously pay more attention to evidence that supports this view and dismiss contradictory evidence. This bias explains much of online polarization — algorithms feed our confirmation bias, and we become more entrenched in our views over time.
+
+The anchoring effect shows how the first number or piece of information we encounter disproportionately influences our subsequent judgments. Retailers exploit this constantly: if a coat is "reduced" from $500 to $250, we perceive it as a bargain — even if $250 is still too expensive. The original price becomes our anchor.
+
+The Dunning-Kruger effect describes the tendency for people with limited knowledge in an area to overestimate their competence, while genuine experts often underestimate theirs. This has obvious implications for education and professional development.
+
+The good news is that awareness helps. Knowing that these biases exist makes it easier to catch yourself in the act. Techniques like considering the opposite view, seeking disconfirming evidence, and slowing down important decisions can reduce their impact significantly.`,
+    questions:[
+      'Explain confirmation bias in your own words. Can you give an example from your own life or from current events?',
+      'Have you ever been affected by the anchoring effect when making a purchase? Describe what happened.',
+      'Which cognitive bias do you think is most dangerous in today\'s world, and why?'
+    ]
+  },
+  {
+    id:'t_habits', category:'psychology', emoji:'🔁', level:'B1–B2', readTime:'4 min',
+    title:'The Science of Habit Formation',
+    summary:'Understanding how habits are built — and broken — using neuroscience.',
+    vocab:[
+      {w:'cue',def:'a signal that triggers an automatic behavior'},
+      {w:'routine',def:'a regular sequence of actions performed automatically'},
+      {w:'reward',def:'something positive that reinforces a behavior'},
+      {w:'neural pathway',def:'a connection between neurons in the brain that gets stronger with repetition'},
+      {w:'automaticity',def:'performing an action without conscious thought'},
+      {w:'keystone habit',def:'a single habit that triggers positive changes in other areas of life'}
+    ],
+    text:`Every day, about 40% of your actions are not conscious decisions — they are habits. From brushing your teeth in the morning to checking your phone when you feel bored, habits are automatic behaviors that your brain has learned to perform with very little mental effort.
+
+Charles Duhigg, author of "The Power of Habit," describes a three-part loop that drives every habit: cue, routine, and reward. The cue is a trigger that tells your brain to start an automatic behavior. The routine is the behavior itself. The reward is what your brain receives — pleasure, relief, or satisfaction — that reinforces the loop and makes you want to repeat it.
+
+Neuroscience explains why habits are so powerful. When you repeat a behavior consistently in response to the same cue, your brain creates and strengthens neural pathways. Over time, the behavior requires less and less conscious thought — it becomes automatic, a process called automaticity. This is why driving feels effortless once you have been doing it for years, even though it seemed impossibly complex when you first started.
+
+Duhigg also introduces the concept of keystone habits — single habits whose adoption triggers positive changes in other unrelated areas of life. Regular exercise, for example, often leads people to eat healthier, sleep better, and be more productive at work — even though those outcomes were never specifically targeted.
+
+To build a new habit, research suggests making the cue obvious, the routine easy, and the reward immediate and satisfying. To break a bad habit, experts recommend keeping the cue and reward the same but substituting a healthier routine.
+
+Learning English consistently is itself a habit. The cue might be your morning coffee, the routine is fifteen minutes of practice, and the reward is the satisfying feeling of progress.`,
+    questions:[
+      'Explain the habit loop (cue, routine, reward) using a specific habit from your own daily life.',
+      'What is a keystone habit? Do you have one? How has it affected other areas of your life?',
+      'What habit would you most like to build or break? How would you apply the science from this article to do it?'
+    ]
+  },
+  {
+    id:'t_eq', category:'psychology', emoji:'❤️', level:'B1–B2', readTime:'4 min',
+    title:'Emotional Intelligence: The Skill That Predicts Success',
+    summary:'IQ predicts academic performance, but EQ predicts almost everything else.',
+    vocab:[
+      {w:'emotional intelligence (EQ)',def:'the ability to recognize, understand, and manage emotions in yourself and others'},
+      {w:'empathy',def:'the ability to understand and share the feelings of another person'},
+      {w:'self-regulation',def:'the ability to control your emotions and impulses'},
+      {w:'interpersonal',def:'relating to relationships between people'},
+      {w:'resilience',def:'the capacity to recover quickly from difficulties or setbacks'},
+      {w:'perceive',def:'to become aware of or understand something'}
+    ],
+    text:`For most of the 20th century, intelligence was measured by IQ — the Intelligence Quotient — which assessed logical reasoning, mathematical ability, and verbal skills. A high IQ was considered the best predictor of success in school and career. But research since the 1990s has revealed a different picture.
+
+Psychologists Peter Salovey and John Mayer coined the term emotional intelligence in 1990, defining it as the ability to perceive, use, understand, and manage emotions — both your own and those of others. Researcher Daniel Goleman later popularized the concept, arguing that EQ, not IQ, is the strongest predictor of success in leadership, relationships, and wellbeing.
+
+Emotional intelligence has four main components. Self-awareness is the ability to recognize your own emotions and understand how they affect your thinking and behavior. Self-regulation is the ability to control impulsive feelings and behaviors, manage emotions in healthy ways, and adapt to changing circumstances. Empathy — arguably the most important component — is the capacity to understand the emotional experience of others, even when it differs significantly from your own. Finally, social skills involve managing relationships, communicating clearly, inspiring others, and resolving conflict constructively.
+
+Research from Harvard Business School found that emotional intelligence was twice as important as technical skills or IQ in determining who became top performers at work. In fields like medicine, education, management, and customer service, the ability to connect with people emotionally makes a decisive difference.
+
+The great news is that emotional intelligence can be learned and improved throughout life, unlike IQ which remains relatively fixed after childhood. Practices like mindfulness meditation, journaling, and actively seeking feedback on your interpersonal behavior have all been shown to increase EQ.
+
+In a world increasingly automated by AI, emotional intelligence may become the most distinctly human — and most valuable — skill of all.`,
+    questions:[
+      'What are the four components of emotional intelligence? Which one do you think is most important in a work environment?',
+      'Think of someone you know who has high emotional intelligence. How does it show in their behavior?',
+      'Do you think emotional intelligence can really be learned, or is it mostly a personality trait you\'re born with?'
+    ]
+  }
+];
 </script>
 
 <!-- ═══════════════════════════
@@ -509,6 +900,9 @@ const LESSONS = {
 // ── STATE ──
 let currentLevel = 'A1';
 let currentLesson = null;
+let currentTopic = null;
+let articleAudioUtterance = null;
+let articleAudioPlaying = false;
 let previousView = 'dashboardView';
 let chatContext = null;
 let spkContext = null;
@@ -668,8 +1062,18 @@ function markComplete(id) {
 
 // ── SYSTEM PROMPT ──
 function getSystemPrompt(context, mode) {
-  const ctx = context ? `Current lesson: "${context.title}". Key vocab: ${context.vocab.map(v=>v.en).join(', ')}. Grammar: ${context.grammar.title}. Focus on this lesson.`
-    : 'Free practice session.';
+  let ctx = 'Free practice session.';
+  if (context && context._isTopic) {
+    const t = context.topic;
+    ctx = `The student just read this article: "${t.title}" (category: ${t.category}).
+Article summary: ${t.summary}
+Key vocabulary from the article: ${t.vocab.map(v=>v.w).join(', ')}.
+The comprehension questions for discussion are:
+${t.questions.map((q,i)=>`${i+1}. ${q}`).join('\n')}
+IMPORTANT: Guide discussion around this article. Ask about their opinions, check comprehension, encourage use of vocabulary from the article. Make it feel like a real book club conversation.`;
+  } else if (context) {
+    ctx = `Current lesson: "${context.title}". Key vocab: ${context.vocab.map(v=>v.en).join(', ')}. Grammar: ${context.grammar.title}. Focus on this lesson.`;
+  }
   const modeNote = mode === 'speaking'
     ? 'IMPORTANT: The student is using VOICE. Keep responses SHORT (2-3 sentences max). Be conversational. Ask one clear follow-up question. Do not use markdown, bullet points, or lists — plain natural speech only.'
     : 'The student is typing. You can be slightly more detailed (3-5 sentences).';
@@ -992,9 +1396,233 @@ async function callOpenAI(messages, systemPrompt) {
   return (await res.json()).choices[0].message.content;
 }
 
+// ── TOPICS ──
+let currentFilter = 'all';
+
+function openTopics() {
+  stopArticleAudio();
+  renderTopics('all');
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.classList.contains('all'));
+  });
+  showView('topicsView');
+}
+
+function filterTopics(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTopics(cat);
+}
+
+function renderTopics(filter) {
+  const list = filter === 'all' ? TOPICS : TOPICS.filter(t => t.category === filter);
+  const colors = { tech:'#0EA5E9', psychology:'#8B5CF6' };
+  document.getElementById('topicsGrid').innerHTML = list.map(t => `
+    <div class="topic-card" onclick="openArticle('${t.id}')" style="--card-color:${colors[t.category]}">
+      <div class="tc-bar" style="background:${colors[t.category]}"></div>
+      <div class="tc-emoji">${t.emoji}</div>
+      <h3>${t.title}</h3>
+      <p>${t.summary}</p>
+      <div class="tc-meta">
+        <span class="cat-badge cat-${t.category}">${t.category === 'tech' ? '💻 Tech' : '🧠 Psychology'}</span>
+        <span class="lvl-badge">${t.level}</span>
+        <span class="read-time">📖 ${t.readTime}</span>
+      </div>
+    </div>`).join('');
+}
+
+function openArticle(id) {
+  stopArticleAudio();
+  const topic = TOPICS.find(t => t.id === id);
+  if (!topic) return;
+  currentTopic = topic;
+  const colors = { tech:'#0EA5E9', psychology:'#8B5CF6' };
+  const col = colors[topic.category];
+
+  document.getElementById('articleTitle').textContent = `${topic.emoji} ${topic.title}`;
+  document.getElementById('articleMeta').innerHTML = `
+    <span class="cat-badge cat-${topic.category}">${topic.category === 'tech' ? '💻 Tech' : '🧠 Psychology'}</span>
+    <span class="lvl-badge">${topic.level}</span>
+    <span class="read-time">📖 ${topic.readTime}</span>`;
+
+  // Build paragraphs
+  const paragraphs = topic.text.split('\n\n').map(p => `<p>${p.trim()}</p>`).join('');
+
+  document.getElementById('articleContent').innerHTML = `
+    <!-- LISTEN BAR -->
+    <div class="article-body">
+      <div class="article-listen-bar" style="background:linear-gradient(135deg,${col}CC,${col})">
+        <button class="listen-btn" id="listenBtn" onclick="toggleArticleAudio()">🔊 Escuchar artículo</button>
+        <div class="listen-progress"><div class="listen-progress-bar" id="listenBar"></div></div>
+        <span class="listen-label" id="listenLabel">Click para escuchar en inglés</span>
+      </div>
+      <div class="article-content">${paragraphs}</div>
+    </div>
+
+    <!-- VOCABULARY -->
+    <div class="lesson-section">
+      <h3><span class="si" style="background:#EEF2FF">📚</span>Key Vocabulary</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">Hover sobre cada palabra para ver su definición en inglés:</p>
+      <div class="vocab-chips">
+        ${topic.vocab.map(v => `
+          <div class="vocab-chip">
+            <strong>${v.w}</strong>
+            <div class="chip-def">${v.def}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- COMPREHENSION -->
+    <div class="comp-section">
+      <h3>📝 Comprehension Questions</h3>
+      ${topic.questions.map((q, i) => `
+        <div class="comp-q">
+          <div class="comp-q-text">${i + 1}. ${q}</div>
+          <textarea class="comp-input" id="compA${i}" placeholder="Write your answer in English..." rows="3"></textarea>
+          <button class="comp-check-btn" onclick="checkComprehension(${i})">✨ Check with AI</button>
+          <div class="comp-feedback" id="compFb${i}"></div>
+        </div>`).join('')}
+    </div>
+
+    <!-- DISCUSS ACTIONS -->
+    <div class="topic-actions">
+      <button class="tdiscuss-spk" onclick="openSpeakingForTopic('${topic.id}')">
+        🎙️ Discuss this article by voice
+      </button>
+      <button class="tdiscuss-chat" onclick="openChatForTopic('${topic.id}')">
+        💬 Chat about this article
+      </button>
+    </div>`;
+
+  showView('articleView');
+}
+
+function toggleArticleAudio() {
+  if (articleAudioPlaying) { stopArticleAudio(); return; }
+  if (!window.speechSynthesis) { showError('Tu navegador no soporta síntesis de voz.'); return; }
+  speechSynthesis.cancel();
+  const topic = currentTopic;
+  articleAudioUtterance = new SpeechSynthesisUtterance(topic.text);
+  articleAudioUtterance.lang = 'en-US';
+  articleAudioUtterance.rate = 0.85;
+  articleAudioUtterance.pitch = 1.0;
+  const voices = speechSynthesis.getVoices();
+  const v = voices.find(v => v.lang === 'en-US' && !v.name.toLowerCase().includes('google'))
+    || voices.find(v => v.lang.startsWith('en'));
+  if (v) articleAudioUtterance.voice = v;
+
+  articleAudioPlaying = true;
+  document.getElementById('listenBtn').textContent = '⏹ Parar audio';
+  document.getElementById('listenLabel').textContent = 'Leyendo artículo...';
+  document.getElementById('listenBar').style.width = '0%';
+
+  // Animate progress bar
+  const words = topic.text.split(' ').length;
+  const estMs = (words / 150) * 60000 / articleAudioUtterance.rate;
+  const startTime = Date.now();
+  const progressInterval = setInterval(() => {
+    if (!articleAudioPlaying) { clearInterval(progressInterval); return; }
+    const pct = Math.min(100, ((Date.now() - startTime) / estMs) * 100);
+    const bar = document.getElementById('listenBar');
+    if (bar) bar.style.width = pct + '%';
+  }, 500);
+
+  articleAudioUtterance.onend = () => {
+    clearInterval(progressInterval);
+    articleAudioPlaying = false;
+    const btn = document.getElementById('listenBtn');
+    const lbl = document.getElementById('listenLabel');
+    const bar = document.getElementById('listenBar');
+    if (btn) btn.textContent = '🔊 Escuchar de nuevo';
+    if (lbl) lbl.textContent = '✅ Artículo completo';
+    if (bar) bar.style.width = '100%';
+  };
+  speechSynthesis.speak(articleAudioUtterance);
+}
+
+function stopArticleAudio() {
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  articleAudioPlaying = false;
+  const btn = document.getElementById('listenBtn');
+  if (btn) btn.textContent = '🔊 Escuchar artículo';
+  const lbl = document.getElementById('listenLabel');
+  if (lbl) lbl.textContent = 'Click para escuchar en inglés';
+}
+
+async function checkComprehension(idx) {
+  const answer = document.getElementById(`compA${idx}`).value.trim();
+  if (!answer) { showError('Escribe tu respuesta antes de revisar.'); return; }
+  const fb = document.getElementById(`compFb${idx}`);
+  fb.style.display = 'block'; fb.className = 'comp-feedback'; fb.textContent = '⏳ Revisando...';
+
+  const question = currentTopic.questions[idx];
+  const prompt = `Article title: "${currentTopic.title}"
+Comprehension question: "${question}"
+Student's answer: "${answer}"
+
+Give brief feedback in Spanish (3-4 sentences):
+1. Is the answer correct/complete based on the article?
+2. What did they miss or could add?
+3. Correct any English grammar errors gently.
+4. One encouraging comment.
+Start with ✅ if solid, 💡 if needs improvement.`;
+
+  try {
+    const r = await callOpenAI([{role:'user',content:prompt}],
+      'You are a helpful English teacher reviewing reading comprehension answers. Give feedback in Spanish, correct English gently.');
+    fb.className = 'comp-feedback ok';
+    fb.innerHTML = r.replace(/\n/g,'<br>');
+  } catch(e) {
+    fb.className = 'comp-feedback err';
+    fb.textContent = '⚠️ Error: ' + e.message;
+  }
+}
+
+function openSpeakingForTopic(id) {
+  const topic = TOPICS.find(t => t.id === id);
+  if (!topic) return;
+  stopArticleAudio();
+  spkContext = null; // clear lesson context
+  spkContext = { _isTopic: true, topic };
+  previousView = 'articleView';
+  document.getElementById('spkSub').textContent = `Discutiendo: ${topic.title}`;
+  document.getElementById('spkCtx').textContent = `${topic.emoji} ${topic.category}`;
+  spkHistory = [];
+  document.getElementById('spkMessages').innerHTML = '';
+
+  const welcome = `Hello! Great choice reading "${topic.title}"! I've read it too. Let's discuss it together in English. You can share your opinions, I'll ask you questions about the content, and I'll help with your English along the way. What was the most interesting idea in the article for you?`;
+  appendSpkMsg('assistant', welcome);
+  if (speechSynthesis) speakText(welcome);
+  showView('speakingView');
+}
+
+function openChatForTopic(id) {
+  const topic = TOPICS.find(t => t.id === id);
+  if (!topic) return;
+  stopArticleAudio();
+  chatContext = { _isTopic: true, topic };
+  previousView = 'articleView';
+  document.getElementById('chatSub').textContent = `Discutiendo: ${topic.title}`;
+  document.getElementById('chatCtx').textContent = `${topic.emoji} ${topic.category}`;
+  chatHistory = [];
+  document.getElementById('chatMessages').innerHTML = '';
+  document.getElementById('chatChips').style.display = 'flex';
+  document.getElementById('chatChips').innerHTML = `
+    <span class="chip" onclick="sendSuggestion(this.textContent)">What did you think of the article?</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">I have a question about the vocabulary</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Ask me a question about the article</span>`;
+
+  const welcome = `Hello! I see you read <strong>"${topic.title}"</strong> — great article! Let's discuss it. I'll ask you questions about the content, help you use the vocabulary, and correct your English gently. What was the most surprising or interesting thing you learned? 🤔`;
+  addMsg('assistant', welcome);
+  showView('chatView');
+  document.getElementById('chatInput').focus();
+}
+
 // ── NAVIGATION ──
 function showView(id) { document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-function goToDashboard() { showView('dashboardView'); renderDashboard(); }
+function goToDashboard() { stopArticleAudio(); showView('dashboardView'); renderDashboard(); }
+function goToTopics() { stopArticleAudio(); showView('topicsView'); }
 function goBack() {
   stopSpeaking();
   if (previousView === 'lessonView' && currentLesson) showView('lessonView');
