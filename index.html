@@ -3,1069 +3,941 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EnglishAI — Tu tutor inteligente</title>
+  <title>EnglishAI — A1 to C2</title>
   <style>
     :root {
-      --primary: #5B4CF5;
-      --primary-light: #7B6FF7;
-      --primary-dark: #4035C3;
-      --accent: #FF6B6B;
-      --success: #4ECDC4;
-      --bg: #F0F2FF;
-      --bg-card: #FFFFFF;
-      --text: #1A1A2E;
-      --text-muted: #6B7280;
-      --border: #E5E7EB;
-      --shadow: 0 4px 24px rgba(91,76,245,0.1);
-      --radius: 16px;
+      --primary: #5B4CF5; --primary-light: #7B6FF7; --primary-dark: #4035C3;
+      --accent: #FF6B6B; --success: #4ECDC4; --warn: #F59E0B;
+      --bg: #F0F2FF; --text: #1A1A2E; --text-muted: #6B7280;
+      --border: #E5E7EB; --shadow: 0 4px 24px rgba(91,76,245,.1); --radius: 16px;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-    /* ── SETUP SCREEN ── */
-    .setup-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
-    .setup-card { background: white; border-radius: 24px; padding: 48px; max-width: 480px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-    .setup-logo { text-align: center; margin-bottom: 32px; }
-    .setup-logo .emoji { font-size: 64px; display: block; margin-bottom: 12px; }
-    .setup-logo h1 { font-size: 32px; font-weight: 800; color: var(--primary); }
-    .setup-logo p { color: var(--text-muted); margin-top: 8px; font-size: 15px; }
-    .setup-form label { display: block; font-weight: 600; margin-bottom: 8px; }
-    .setup-form input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 14px; transition: border-color .2s; outline: none; }
-    .setup-form input:focus { border-color: var(--primary); }
-    .setup-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: transform .2s, box-shadow .2s; }
-    .setup-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(91,76,245,0.4); }
-    .setup-hint { background: #F0F2FF; border-radius: 12px; padding: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); line-height: 1.7; }
-    .setup-hint a { color: var(--primary); text-decoration: none; font-weight: 600; }
-    .setup-hint strong { color: var(--text); }
+    /* ── SETUP ── */
+    .setup-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#667eea,#764ba2);padding:20px}
+    .setup-card{background:#fff;border-radius:24px;padding:44px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+    .setup-logo{text-align:center;margin-bottom:28px}
+    .setup-logo .em{font-size:60px;display:block;margin-bottom:10px}
+    .setup-logo h1{font-size:30px;font-weight:800;color:var(--primary)}
+    .setup-logo p{color:var(--text-muted);margin-top:6px}
+    .setup-form label{display:block;font-weight:600;margin-bottom:8px}
+    .setup-form input{width:100%;padding:13px 15px;border:2px solid var(--border);border-radius:12px;font-size:14px;outline:none;transition:border-color .2s}
+    .setup-form input:focus{border-color:var(--primary)}
+    .setup-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-top:14px;transition:transform .2s,box-shadow .2s}
+    .setup-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(91,76,245,.4)}
+    .setup-hint{background:#F0F2FF;border-radius:12px;padding:14px;margin-top:20px;font-size:13px;color:var(--text-muted);line-height:1.7}
+    .setup-hint a{color:var(--primary);text-decoration:none;font-weight:600}
+    .setup-hint strong{color:var(--text)}
 
-    /* ── MAIN APP ── */
-    .app { display: none; min-height: 100vh; flex-direction: column; }
-    .app.active { display: flex; }
+    /* ── APP ── */
+    .app{display:none;min-height:100vh;flex-direction:column}
+    .app.active{display:flex}
 
-    /* TOP NAV */
-    .topnav { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.05); }
-    .nav-logo { font-size: 22px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-    .nav-center { display: flex; gap: 8px; }
-    .level-btn { padding: 6px 16px; border-radius: 20px; border: 2px solid var(--border); background: white; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text-muted); transition: all .2s; }
-    .level-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
-    .nav-right { display: flex; align-items: center; gap: 12px; }
-    .chat-nav-btn { padding: 8px 20px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; border-radius: 20px; font-weight: 700; font-size: 14px; cursor: pointer; transition: transform .2s; }
-    .chat-nav-btn:hover { transform: scale(1.05); }
-    .api-settings-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 20px; padding: 4px; }
+    /* TOPNAV */
+    .topnav{background:#fff;border-bottom:1px solid var(--border);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.05);gap:12px}
+    .nav-logo{font-size:20px;font-weight:800;color:var(--primary);white-space:nowrap}
+    .nav-levels{display:flex;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .nav-levels::-webkit-scrollbar{display:none}
+    .level-btn{padding:5px 12px;border-radius:20px;border:2px solid var(--border);background:#fff;cursor:pointer;font-weight:600;font-size:12px;color:var(--text-muted);transition:all .2s;white-space:nowrap}
+    .level-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+    .nav-right{display:flex;gap:8px;flex-shrink:0}
+    .speak-nav-btn{padding:7px 14px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;transition:transform .2s}
+    .speak-nav-btn:hover{transform:scale(1.05)}
+    .chat-nav-btn{padding:7px 14px;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border:none;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;transition:transform .2s}
+    .chat-nav-btn:hover{transform:scale(1.05)}
+    .cfg-btn{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:18px;padding:4px}
 
     /* CONTENT */
-    .main-content { flex: 1; padding: 32px 24px; max-width: 1100px; margin: 0 auto; width: 100%; }
-    .view { display: none; }
-    .view.active { display: block; }
+    .main-content{flex:1;padding:28px 20px;max-width:1080px;margin:0 auto;width:100%}
+    .view{display:none}.view.active{display:block}
 
     /* ── DASHBOARD ── */
-    .dashboard-header { margin-bottom: 32px; }
-    .dashboard-header h2 { font-size: 28px; font-weight: 800; }
-    .dashboard-header p { color: var(--text-muted); margin-top: 6px; }
-    .lessons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-    .lesson-card { background: white; border-radius: var(--radius); padding: 24px; cursor: pointer; transition: transform .2s, box-shadow .2s; box-shadow: var(--shadow); border: 2px solid transparent; position: relative; overflow: hidden; }
-    .lesson-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(91,76,245,.15); border-color: var(--primary); }
-    .lesson-card.completed { border-color: var(--success); }
-    .lesson-card-accent { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
-    .lesson-emoji { font-size: 36px; margin-bottom: 12px; }
-    .lesson-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-    .lesson-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
-    .lesson-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
-    .lesson-tag { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
-    .tag-grammar { background: #EEF2FF; color: var(--primary); }
-    .tag-vocabulary { background: #FFF0F5; color: var(--accent); }
-    .tag-phrases { background: #F0FFF4; color: #059669; }
-    .tag-communication { background: #FFFBEB; color: #D97706; }
-    .lesson-duration { font-size: 12px; color: var(--text-muted); }
-    .completed-badge { position: absolute; top: 16px; right: 16px; background: var(--success); color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .dash-header{margin-bottom:28px}
+    .dash-header h2{font-size:26px;font-weight:800}
+    .dash-header p{color:var(--text-muted);margin-top:5px}
+    .lessons-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+    .lesson-card{background:#fff;border-radius:var(--radius);padding:22px;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:var(--shadow);border:2px solid transparent;position:relative;overflow:hidden}
+    .lesson-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(91,76,245,.15);border-color:var(--primary)}
+    .lesson-card.completed{border-color:var(--success)}
+    .lc-bar{position:absolute;top:0;left:0;right:0;height:4px}
+    .done-badge{position:absolute;top:14px;right:14px;background:var(--success);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px}
+    .lesson-card .emoji{font-size:32px;margin-bottom:10px}
+    .lesson-card h3{font-size:16px;font-weight:700;margin-bottom:5px}
+    .lesson-card p{font-size:12px;color:var(--text-muted);line-height:1.5}
+    .lc-meta{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+    .ltag{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+    .tag-grammar{background:#EEF2FF;color:var(--primary)}
+    .tag-vocabulary{background:#FFF0F5;color:var(--accent)}
+    .tag-phrases{background:#F0FFF4;color:#059669}
+    .tag-communication{background:#FFFBEB;color:#D97706}
+    .tag-advanced{background:#FDF4FF;color:#7C3AED}
+    .ldur{font-size:11px;color:var(--text-muted)}
 
     /* ── LESSON VIEW ── */
-    .lesson-view-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
-    .back-btn { background: white; border: 2px solid var(--border); border-radius: 12px; padding: 8px 16px; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; transition: all .2s; white-space: nowrap; }
-    .back-btn:hover { border-color: var(--primary); color: var(--primary); }
-    .lesson-view-title { font-size: 26px; font-weight: 800; }
-    .lesson-view-subtitle { color: var(--text-muted); margin-top: 4px; }
-    .lesson-section { background: white; border-radius: var(--radius); padding: 28px; margin-bottom: 20px; box-shadow: var(--shadow); }
-    .lesson-section h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-    .section-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .view-header{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+    .back-btn{background:#fff;border:2px solid var(--border);border-radius:12px;padding:7px 14px;cursor:pointer;font-weight:600;font-size:13px;white-space:nowrap;transition:all .2s}
+    .back-btn:hover{border-color:var(--primary);color:var(--primary)}
+    .view-title{font-size:24px;font-weight:800}
+    .view-sub{color:var(--text-muted);margin-top:3px;font-size:14px}
+    .lesson-section{background:#fff;border-radius:var(--radius);padding:26px;margin-bottom:18px;box-shadow:var(--shadow)}
+    .lesson-section h3{font-size:17px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:9px}
+    .si{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+    .vocab-table{width:100%;border-collapse:collapse}
+    .vocab-table th{background:var(--bg);padding:9px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted)}
+    .vocab-table td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px}
+    .vocab-table tr:last-child td{border-bottom:none}
+    .ven{font-weight:700;color:var(--primary)}.ves{color:var(--text-muted)}.vex{font-style:italic;color:#4B5563}
+    .grammar-rule{background:linear-gradient(135deg,#EEF2FF,#F5F3FF);border-left:4px solid var(--primary);border-radius:0 12px 12px 0;padding:14px 18px;margin-bottom:14px}
+    .rule-title{font-weight:700;margin-bottom:7px;font-size:14px}
+    .rule-formula{background:#fff;border-radius:8px;padding:9px 13px;font-family:'Courier New',monospace;font-size:12px;margin-bottom:8px;border:1px solid var(--border)}
+    .gex{list-style:none}
+    .gex li{padding:7px 0;border-bottom:1px dashed var(--border);display:flex;gap:10px;align-items:flex-start;font-size:13px}
+    .gex li:last-child{border-bottom:none}
+    .ge-en{font-weight:600;flex:1}.ge-es{color:var(--text-muted);flex:1}
+    .practice-area{background:var(--bg);border-radius:12px;padding:18px}
+    .pq{font-weight:600;margin-bottom:6px;font-size:14px}
+    .ph{font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.5}
+    .pi{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:14px;outline:none;transition:border-color .2s;resize:vertical;min-height:90px;font-family:inherit}
+    .pi:focus{border-color:var(--primary)}
+    .pbtn{padding:9px 18px;background:var(--primary);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;margin-top:8px;transition:background .2s}
+    .pbtn:hover{background:var(--primary-dark)}
+    .pfb{margin-top:10px;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.6;display:none}
+    .pfb.ok{background:#F0FFF4;color:#065F46;border:1px solid #A7F3D0}
+    .pfb.err{background:#FFF5F5;color:#991B1B;border:1px solid #FCA5A5}
+    .lesson-actions{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+    .cbtn{padding:13px 24px;background:var(--success);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;flex:1;min-width:160px}
+    .cbtn:hover{background:#3AB8B0;transform:translateY(-2px)}.cbtn.done{background:#9CA3AF;cursor:default;transform:none}
+    .spk-lesson-btn{padding:13px 24px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;flex:1;min-width:160px}
+    .spk-lesson-btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(16,185,129,.3)}
+    .chlbtn{padding:13px 24px;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;flex:1;min-width:160px}
+    .chlbtn:hover{transform:translateY(-2px)}
 
-    /* Vocab Table */
-    .vocab-table { width: 100%; border-collapse: collapse; }
-    .vocab-table th { background: var(--bg); padding: 10px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
-    .vocab-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
-    .vocab-table tr:last-child td { border-bottom: none; }
-    .vocab-en { font-weight: 700; color: var(--primary); }
-    .vocab-es { color: var(--text-muted); }
-    .vocab-example { font-style: italic; color: #4B5563; }
+    /* ── SPEAKING VIEW ── */
+    .speaking-container{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 175px)}
+    .spk-header{padding:16px 22px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;display:flex;align-items:center;gap:12px}
+    .spk-avatar{width:46px;height:46px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+    .spk-header-info h3{font-size:16px;font-weight:700}
+    .spk-header-info p{font-size:12px;opacity:.85}
+    .spk-ctx{margin-left:auto;background:rgba(255,255,255,.2);padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;flex-shrink:0}
+    .spk-transcript{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+    .spk-msg{display:flex;gap:10px;max-width:80%}
+    .spk-msg.user{align-self:flex-end;flex-direction:row-reverse}
+    .spk-bub{padding:11px 15px;border-radius:16px;font-size:14px;line-height:1.6}
+    .spk-msg.assistant .spk-bub{background:var(--bg);border-radius:4px 16px 16px 16px}
+    .spk-msg.user .spk-bub{background:var(--primary);color:#fff;border-radius:16px 4px 16px 16px}
+    .spk-msg .av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--bg)}
+    .spk-msg.user .av{background:var(--primary);color:#fff;font-size:12px;font-weight:700}
 
-    /* Grammar */
-    .grammar-rule { background: linear-gradient(135deg, #EEF2FF, #F5F3FF); border-left: 4px solid var(--primary); border-radius: 0 12px 12px 0; padding: 16px 20px; margin-bottom: 16px; }
-    .grammar-rule .rule-title { font-weight: 700; margin-bottom: 8px; }
-    .grammar-rule .rule-formula { background: white; border-radius: 8px; padding: 10px 14px; font-family: 'Courier New', monospace; font-size: 13px; margin-bottom: 10px; border: 1px solid var(--border); }
-    .grammar-examples { list-style: none; }
-    .grammar-examples li { padding: 8px 0; border-bottom: 1px dashed var(--border); display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
-    .grammar-examples li:last-child { border-bottom: none; }
-    .grammar-examples .en { font-weight: 600; flex: 1; }
-    .grammar-examples .es { color: var(--text-muted); flex: 1; }
-
-    /* Practice */
-    .practice-area { background: var(--bg); border-radius: 12px; padding: 20px; }
-    .practice-prompt { font-weight: 600; margin-bottom: 8px; }
-    .practice-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5; }
-    .practice-input { width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; transition: border-color .2s; resize: vertical; min-height: 100px; font-family: inherit; }
-    .practice-input:focus { border-color: var(--primary); }
-    .practice-btn { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; margin-top: 10px; transition: background .2s; }
-    .practice-btn:hover { background: var(--primary-dark); }
-    .practice-feedback { margin-top: 12px; padding: 14px 16px; border-radius: 10px; font-size: 14px; line-height: 1.6; display: none; }
-    .practice-feedback.correct { background: #F0FFF4; color: #065F46; border: 1px solid #A7F3D0; }
-    .practice-feedback.error { background: #FFF5F5; color: #991B1B; border: 1px solid #FCA5A5; }
-
-    /* Lesson Actions */
-    .lesson-actions { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
-    .complete-btn { padding: 14px 28px; background: var(--success); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: all .2s; flex: 1; min-width: 180px; }
-    .complete-btn:hover { background: #3AB8B0; transform: translateY(-2px); }
-    .complete-btn.done { background: #9CA3AF; cursor: default; transform: none; }
-    .chat-lesson-btn { padding: 14px 28px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: all .2s; flex: 1; min-width: 180px; }
-    .chat-lesson-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(91,76,245,.3); }
+    /* MIC AREA */
+    .mic-area{padding:20px;border-top:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:14px;background:#fff}
+    .mic-status{font-size:13px;color:var(--text-muted);font-weight:500;text-align:center;min-height:20px}
+    .mic-btn{width:80px;height:80px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:36px;transition:all .3s;position:relative;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+    .mic-btn.idle{background:linear-gradient(135deg,#10B981,#059669)}
+    .mic-btn.listening{background:linear-gradient(135deg,#EF4444,#DC2626);animation:mic-pulse 1s infinite}
+    .mic-btn.thinking{background:linear-gradient(135deg,var(--primary),var(--primary-light));animation:mic-spin 1.5s linear infinite}
+    .mic-btn.speaking{background:linear-gradient(135deg,#F59E0B,#D97706);animation:mic-wave 0.8s ease-in-out infinite alternate}
+    .mic-btn:disabled{background:#9CA3AF;cursor:not-allowed;animation:none}
+    @keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 18px rgba(239,68,68,0)}}
+    @keyframes mic-spin{from{box-shadow:0 0 0 0 rgba(91,76,245,.4)}to{box-shadow:0 0 0 16px rgba(91,76,245,0)}}
+    @keyframes mic-wave{from{transform:scale(1)}to{transform:scale(1.08)}}
+    .interim-text{font-size:13px;color:var(--text-muted);font-style:italic;text-align:center;min-height:18px;max-width:400px}
+    .mic-controls{display:flex;gap:10px;align-items:center}
+    .spd-label{font-size:12px;color:var(--text-muted);font-weight:600}
+    .spd-btn{padding:5px 11px;border:2px solid var(--border);border-radius:20px;background:#fff;cursor:pointer;font-size:11px;font-weight:600;color:var(--text-muted);transition:all .2s}
+    .spd-btn.active{background:var(--success);border-color:var(--success);color:#fff}
+    .stop-speaking-btn{padding:5px 14px;background:var(--accent);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;display:none}
 
     /* ── CHAT VIEW ── */
-    .chat-container { height: calc(100vh - 185px); display: flex; flex-direction: column; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-    .chat-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; }
-    .chat-avatar { width: 48px; height: 48px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
-    .chat-header-info h3 { font-size: 17px; font-weight: 700; }
-    .chat-header-info p { font-size: 12px; opacity: .85; }
-    .chat-context-tag { margin-left: auto; background: rgba(255,255,255,.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
-    .chat-messages { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
-    .message { display: flex; gap: 10px; max-width: 78%; }
-    .message.user { align-self: flex-end; flex-direction: row-reverse; }
-    .msg-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
-    .message.assistant .msg-avatar { background: var(--bg); }
-    .message.user .msg-avatar { background: var(--primary); color: white; font-size: 13px; font-weight: 700; }
-    .msg-bubble { padding: 12px 16px; border-radius: 16px; font-size: 15px; line-height: 1.6; }
-    .message.assistant .msg-bubble { background: var(--bg); border-radius: 4px 16px 16px 16px; }
-    .message.user .msg-bubble { background: var(--primary); color: white; border-radius: 16px 4px 16px 16px; }
-    .typing-indicator { display: flex; gap: 5px; padding: 14px 18px; background: var(--bg); border-radius: 4px 16px 16px 16px; width: fit-content; }
-    .typing-dot { width: 8px; height: 8px; background: var(--text-muted); border-radius: 50%; animation: bounce 1.2s infinite; }
-    .typing-dot:nth-child(2) { animation-delay: .2s; }
-    .typing-dot:nth-child(3) { animation-delay: .4s; }
-    @keyframes bounce { 0%,60%,100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-7px); opacity: 1; } }
-    .suggestion-chips { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 24px 0; }
-    .chip { padding: 6px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; font-size: 13px; cursor: pointer; transition: all .2s; color: var(--primary); font-weight: 500; }
-    .chip:hover { background: var(--primary); color: white; border-color: var(--primary); }
-    .chat-input-area { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: flex-end; background: white; }
-    .chat-input { flex: 1; padding: 11px 15px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; transition: border-color .2s; resize: none; max-height: 120px; font-family: inherit; line-height: 1.5; }
-    .chat-input:focus { border-color: var(--primary); }
-    .send-btn { width: 46px; height: 46px; background: var(--primary); color: white; border: none; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 19px; transition: all .2s; flex-shrink: 0; }
-    .send-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
-    .send-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; }
+    .chat-container{height:calc(100vh - 175px);display:flex;flex-direction:column;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .chat-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff}
+    .ch-avatar{width:46px;height:46px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+    .ch-info h3{font-size:16px;font-weight:700}
+    .ch-info p{font-size:12px;opacity:.85}
+    .ch-ctx{margin-left:auto;background:rgba(255,255,255,.2);padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;flex-shrink:0}
+    .chat-messages{flex:1;overflow-y:auto;padding:18px 22px;display:flex;flex-direction:column;gap:12px}
+    .message{display:flex;gap:10px;max-width:78%}
+    .message.user{align-self:flex-end;flex-direction:row-reverse}
+    .mav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:var(--bg)}
+    .message.user .mav{background:var(--primary);color:#fff;font-size:12px;font-weight:700}
+    .mbub{padding:11px 15px;border-radius:16px;font-size:14px;line-height:1.6}
+    .message.assistant .mbub{background:var(--bg);border-radius:4px 16px 16px 16px}
+    .message.user .mbub{background:var(--primary);color:#fff;border-radius:16px 4px 16px 16px}
+    .typing-ind{display:flex;gap:4px;padding:12px 15px;background:var(--bg);border-radius:4px 16px 16px 16px;width:fit-content}
+    .td{width:7px;height:7px;background:var(--text-muted);border-radius:50%;animation:tb 1.2s infinite}
+    .td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+    @keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+    .chips{display:flex;gap:7px;flex-wrap:wrap;padding:8px 22px 0}
+    .chip{padding:5px 13px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;transition:all .2s;color:var(--primary);font-weight:500}
+    .chip:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .chat-input-area{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:9px;align-items:flex-end;background:#fff}
+    .chat-input{flex:1;padding:10px 14px;border:2px solid var(--border);border-radius:12px;font-size:14px;outline:none;transition:border-color .2s;resize:none;max-height:110px;font-family:inherit;line-height:1.5}
+    .chat-input:focus{border-color:var(--primary)}
+    .send-btn{width:44px;height:44px;background:var(--primary);color:#fff;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s;flex-shrink:0}
+    .send-btn:hover{background:var(--primary-dark);transform:scale(1.05)}
+    .send-btn:disabled{background:var(--border);cursor:not-allowed;transform:none}
+
+    /* BROWSER WARNING */
+    .browser-warn{background:#FFFBEB;border:1px solid #FCD34D;border-radius:12px;padding:14px 18px;margin-bottom:16px;font-size:13px;color:#92400E;display:none}
+    .browser-warn strong{display:block;margin-bottom:4px}
 
     /* Toast */
-    .error-toast { position: fixed; bottom: 24px; right: 24px; background: #991B1B; color: white; padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 1000; display: none; max-width: 340px; line-height: 1.5; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+    .error-toast{position:fixed;bottom:20px;right:20px;background:#991B1B;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;z-index:1000;display:none;max-width:320px;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 
-    /* Responsive */
-    @media (max-width: 640px) {
-      .lessons-grid { grid-template-columns: 1fr; }
-      .nav-center { display: none; }
-      .setup-card { padding: 28px 20px; }
-      .main-content { padding: 20px 16px; }
+    @media(max-width:640px){
+      .lessons-grid{grid-template-columns:1fr}
+      .topnav{height:auto;padding:8px 14px;flex-wrap:wrap;gap:8px}
+      .nav-levels{order:3;width:100%}
+      .main-content{padding:16px 14px}
     }
   </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════
-     SETUP SCREEN
-══════════════════════════════════ -->
+<!-- SETUP -->
 <div class="setup-screen" id="setupScreen">
   <div class="setup-card">
     <div class="setup-logo">
-      <span class="emoji">🎓</span>
+      <span class="em">🎓</span>
       <h1>EnglishAI</h1>
-      <p>Tu tutor de inglés personalizado con Inteligencia Artificial</p>
+      <p>Tu tutor de inglés A1 → C2 con voz e IA</p>
     </div>
     <form class="setup-form" onsubmit="startApp(event)">
-      <label for="apiKey">🔑 Tu API Key de OpenAI</label>
-      <input type="password" id="apiKey" placeholder="sk-proj-..." required autocomplete="off" />
-      <button type="submit" class="setup-btn">🚀 Comenzar a aprender inglés</button>
+      <label>🔑 Tu API Key de OpenAI</label>
+      <input type="password" id="apiKey" placeholder="sk-proj-..." required autocomplete="off"/>
+      <button type="submit" class="setup-btn">🚀 Comenzar a aprender</button>
     </form>
     <div class="setup-hint">
-      <strong>¿Cómo obtener tu API Key? (gratis para empezar)</strong><br>
+      <strong>¿Cómo obtener tu API Key?</strong><br>
       1. Ve a <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a><br>
-      2. Crea una cuenta (OpenAI da crédito gratis al registrarte)<br>
-      3. En "API keys", crea una nueva key y pégala arriba<br><br>
-      <strong>💸 Costo real:</strong> Esta app usa <strong>GPT-4o mini</strong>, que cuesta ~$0.15 USD por millón de tokens. 100 conversaciones completas = menos de $0.05 USD. ¡Casi gratis!<br><br>
-      🔒 Tu API key solo se guarda en <em>tu navegador</em> (localStorage), nunca en servidores externos.
+      2. Crea cuenta (OpenAI da crédito gratis inicial)<br>
+      3. Genera una nueva key y pégala arriba<br><br>
+      <strong>💸 Costo:</strong> GPT-4o mini ≈ $0.05 USD por 100 conversaciones completas<br>
+      🎙️ El modo Speaking usa la voz del navegador — <strong>100% gratis</strong><br>
+      🔒 Tu key solo se guarda en tu navegador
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════
-     MAIN APP
-══════════════════════════════════ -->
+<!-- MAIN APP -->
 <div class="app" id="mainApp">
-
-  <!-- TOP NAV -->
   <nav class="topnav">
     <div class="nav-logo">🎓 EnglishAI</div>
-    <div class="nav-center">
-      <button class="level-btn active" onclick="setLevel('A1', this)">A1 Básico</button>
-      <button class="level-btn" onclick="setLevel('A2', this)">A2 Elemental</button>
-      <button class="level-btn" onclick="setLevel('B1', this)">B1 Intermedio</button>
+    <div class="nav-levels">
+      <button class="level-btn active" onclick="setLevel('A1',this)">A1</button>
+      <button class="level-btn" onclick="setLevel('A2',this)">A2</button>
+      <button class="level-btn" onclick="setLevel('B1',this)">B1</button>
+      <button class="level-btn" onclick="setLevel('B2',this)">B2</button>
+      <button class="level-btn" onclick="setLevel('C1',this)">C1</button>
+      <button class="level-btn" onclick="setLevel('C2',this)">C2</button>
     </div>
     <div class="nav-right">
-      <button class="chat-nav-btn" onclick="openChat(null)">💬 Hablar con tutor</button>
-      <button class="api-settings-btn" onclick="resetApiKey()" title="Cambiar API Key">⚙️</button>
+      <button class="speak-nav-btn" onclick="openSpeaking(null)">🎙️ Speak</button>
+      <button class="chat-nav-btn" onclick="openChat(null)">💬 Chat</button>
+      <button class="cfg-btn" onclick="resetApiKey()" title="Cambiar API Key">⚙️</button>
     </div>
   </nav>
 
   <div class="main-content">
-
-    <!-- ── DASHBOARD VIEW ── -->
+    <!-- DASHBOARD -->
     <div class="view active" id="dashboardView">
-      <div class="dashboard-header">
-        <h2 id="levelTitle">🌱 Nivel A1 — Básico</h2>
-        <p id="levelDesc">Aprende los fundamentos del inglés: saludos, vocabulario esencial y gramática básica</p>
+      <div class="dash-header">
+        <h2 id="levelTitle">🌱 A1 — Básico</h2>
+        <p id="levelDesc">Aprende los fundamentos del inglés</p>
       </div>
       <div class="lessons-grid" id="lessonsGrid"></div>
     </div>
 
-    <!-- ── LESSON VIEW ── -->
+    <!-- LESSON -->
     <div class="view" id="lessonView">
-      <div class="lesson-view-header">
+      <div class="view-header">
         <button class="back-btn" onclick="goToDashboard()">← Volver</button>
         <div>
-          <div class="lesson-view-title" id="lessonTitle"></div>
-          <div class="lesson-view-subtitle" id="lessonSubtitle"></div>
+          <div class="view-title" id="lessonTitle"></div>
+          <div class="view-sub" id="lessonSub"></div>
         </div>
       </div>
       <div id="lessonContent"></div>
     </div>
 
-    <!-- ── CHAT VIEW ── -->
-    <div class="view" id="chatView">
-      <div class="lesson-view-header">
+    <!-- SPEAKING -->
+    <div class="view" id="speakingView">
+      <div class="view-header">
         <button class="back-btn" onclick="goBack()">← Volver</button>
         <div>
-          <div class="lesson-view-title">Tutor IA — Alex</div>
-          <div class="lesson-view-subtitle" id="chatSubtitle">Conversación libre</div>
+          <div class="view-title">🎙️ Speaking Mode — Alex</div>
+          <div class="view-sub" id="spkSub">Conversación de voz en inglés</div>
         </div>
       </div>
-      <div class="chat-container">
-        <div class="chat-header">
-          <div class="chat-avatar">🤖</div>
-          <div class="chat-header-info">
-            <h3>Alex — Tu Tutor de Inglés</h3>
-            <p>GPT-4o mini · Método comunicativo · Corrección gentil</p>
+      <div class="browser-warn" id="browserWarn">
+        <strong>⚠️ Navegador no compatible con reconocimiento de voz</strong>
+        El modo Speaking requiere Chrome o Edge. Por favor abre la app en uno de esos navegadores para usar el micrófono.
+      </div>
+      <div class="speaking-container">
+        <div class="spk-header">
+          <div class="spk-avatar">🤖</div>
+          <div class="spk-header-info">
+            <h3>Alex — Tutor de Voz</h3>
+            <p>Habla en inglés · Corrección en tiempo real</p>
           </div>
-          <div class="chat-context-tag" id="chatContextTag">💬 Free Chat</div>
+          <div class="spk-ctx" id="spkCtx">🎙️ Speaking</div>
         </div>
-        <div class="suggestion-chips" id="suggestionChips"></div>
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-input-area">
-          <textarea class="chat-input" id="chatInput"
-            placeholder="Write in English... (Escribe en inglés)"
-            rows="1"
-            onkeydown="handleEnter(event)"
-            oninput="autoResize(this)"></textarea>
-          <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+        <div class="spk-transcript" id="spkMessages"></div>
+        <div class="mic-area">
+          <div class="interim-text" id="interimText"></div>
+          <button class="mic-btn idle" id="micBtn" onclick="toggleMic()">🎤</button>
+          <div class="mic-status" id="micStatus">Toca el micrófono para hablar en inglés</div>
+          <div class="mic-controls">
+            <span class="spd-label">Velocidad de Alex:</span>
+            <button class="spd-btn active" onclick="setSpeed(0.75,this)">Lento</button>
+            <button class="spd-btn" onclick="setSpeed(0.9,this)">Normal</button>
+            <button class="spd-btn" onclick="setSpeed(1.1,this)">Rápido</button>
+            <button class="stop-speaking-btn" id="stopSpkBtn" onclick="stopSpeaking()">⏹ Parar</button>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- CHAT -->
+    <div class="view" id="chatView">
+      <div class="view-header">
+        <button class="back-btn" onclick="goBack()">← Volver</button>
+        <div>
+          <div class="view-title">💬 Chat — Alex</div>
+          <div class="view-sub" id="chatSub">Conversación escrita</div>
+        </div>
+      </div>
+      <div class="chat-container">
+        <div class="chat-header">
+          <div class="ch-avatar">🤖</div>
+          <div class="ch-info">
+            <h3>Alex — Tutor de Inglés</h3>
+            <p>GPT-4o mini · Método comunicativo</p>
+          </div>
+          <div class="ch-ctx" id="chatCtx">💬 Chat</div>
+        </div>
+        <div class="chips" id="chatChips"></div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-area">
+          <textarea class="chat-input" id="chatInput" placeholder="Write in English..." rows="1"
+            onkeydown="handleEnter(event)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-
 <div class="error-toast" id="errorToast"></div>
 
-<!-- ══════════════════════════════════
+<!-- ═══════════════════════════
      LESSON DATA
-══════════════════════════════════ -->
+═══════════════════════════ -->
 <script>
 const LESSONS = {
-  A1: [
-    {
-      id: 'a1_greetings', emoji: '👋',
-      title: 'Greetings & Introductions', titleEs: 'Saludos y presentaciones',
-      description: 'Aprende a saludar y presentarte en inglés.', tag: 'phrases', duration: '15 min', color: '#6C63FF',
-      vocabulary: [
-        { en: 'Hello / Hi', es: 'Hola', example: '"Hello! My name is Ana."' },
-        { en: 'Good morning', es: 'Buenos días', example: '"Good morning, how are you?"' },
-        { en: 'Good afternoon', es: 'Buenas tardes', example: '"Good afternoon, nice to meet you."' },
-        { en: 'Good night / Goodbye', es: 'Buenas noches / Adiós', example: '"Good night! See you tomorrow."' },
-        { en: 'Please / Thank you', es: 'Por favor / Gracias', example: '"Can you help me, please? Thank you!"' },
-        { en: 'Sorry / Excuse me', es: 'Lo siento / Disculpe', example: '"Excuse me, where is the bathroom?"' },
-        { en: 'Nice to meet you', es: 'Mucho gusto', example: '"Nice to meet you! I\'m Carlos."' },
-      ],
-      grammar: {
-        title: 'Verb "To Be" — Presentaciones básicas',
-        rules: [
-          { title: 'Afirmativo', formula: 'I am / You are / He is / She is / We are / They are',
-            examples: [
-              { en: 'I am Ana. I am from Mexico.', es: 'Soy Ana. Soy de México.' },
-              { en: 'She is my teacher.', es: 'Ella es mi maestra.' },
-              { en: 'We are students.', es: 'Somos estudiantes.' },
-            ]},
-          { title: 'Preguntas esenciales', formula: 'What is your name? / How are you? / Where are you from?',
-            examples: [
-              { en: 'What is your name? → My name is...', es: '¿Cómo te llamas? → Me llamo...' },
-              { en: 'How are you? → I am fine, thank you.', es: '¿Cómo estás? → Estoy bien, gracias.' },
-              { en: 'Where are you from? → I am from Colombia.', es: '¿De dónde eres? → Soy de Colombia.' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Escribe una presentación corta: tu nombre, de dónde eres, cómo estás y una cosa que te gusta.',
-        hint: 'Ejemplo: "Hello! My name is Ana. I am from Mexico. I am fine today. I like music."'
-      }
-    },
-    {
-      id: 'a1_numbers', emoji: '🔢',
-      title: 'Numbers & Basic Math', titleEs: 'Números y vocabulario básico',
-      description: 'Del 1 al 100, edades y precios en inglés.', tag: 'vocabulary', duration: '20 min', color: '#FF6B6B',
-      vocabulary: [
-        { en: 'One, Two, Three, Four, Five', es: 'Uno, Dos, Tres, Cuatro, Cinco', example: '"I have three sisters."' },
-        { en: 'Ten, Twenty, Thirty, Fifty, Hundred', es: 'Diez, Veinte, Treinta, Cincuenta, Cien', example: '"She is twenty-two years old."' },
-        { en: 'How much? / How many?', es: '¿Cuánto cuesta? / ¿Cuántos?', example: '"How much is this? — It\'s ten dollars."' },
-        { en: 'Dollar / Euro / Free', es: 'Dólar / Euro / Gratis', example: '"The app is free!"' },
-        { en: 'First / Second / Third', es: 'Primero / Segundo / Tercero', example: '"I live on the third floor."' },
-      ],
-      grammar: {
-        title: 'Edades y precios',
-        rules: [
-          { title: 'Preguntar la edad', formula: 'How old are you? → I am [number] years old.',
-            examples: [
-              { en: 'How old are you? — I am 21 years old.', es: '¿Cuántos años tienes? — Tengo 21 años.' },
-              { en: 'How old is she? — She is 35.', es: '¿Cuántos años tiene? — Tiene 35.' },
-            ]},
-          { title: 'Preguntar precios', formula: 'How much is/are [item]? → It costs / They cost $[number].',
-            examples: [
-              { en: 'How much is the coffee? — It costs 3 dollars.', es: '¿Cuánto cuesta el café? — Cuesta 3 dólares.' },
-              { en: 'How much are the tickets? — They cost fifty dollars.', es: '¿Cuánto cuestan los boletos? — Cuestan 50 dólares.' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Traduce estas oraciones al inglés: (1) Tengo 20 años. (2) Mi libro cuesta 15 dólares. (3) Hay 30 estudiantes en mi clase.',
-        hint: 'Usa: I am... years old. / It costs... / There are...'
-      }
-    },
-    {
-      id: 'a1_colors', emoji: '🎨',
-      title: 'Colors & Descriptions', titleEs: 'Colores y descripciones',
-      description: 'Describe objetos y personas con adjetivos básicos.', tag: 'vocabulary', duration: '15 min', color: '#4ECDC4',
-      vocabulary: [
-        { en: 'Red / Blue / Green', es: 'Rojo / Azul / Verde', example: '"Her car is red."' },
-        { en: 'Yellow / Orange / Purple', es: 'Amarillo / Naranja / Morado', example: '"The sunset is orange."' },
-        { en: 'Black / White / Brown', es: 'Negro / Blanco / Café', example: '"He has a black cat."' },
-        { en: 'Big / Small / Tall / Short', es: 'Grande / Pequeño / Alto / Bajo', example: '"I live in a big city."' },
-        { en: 'Beautiful / Old / New / Fast', es: 'Bonito/a / Viejo/a / Nuevo/a / Rápido/a', example: '"This is my new phone."' },
-      ],
-      grammar: {
-        title: 'Adjetivos — siempre ANTES del sustantivo',
-        rules: [
-          { title: 'Posición del adjetivo (¡diferente al español!)',
-            formula: '[adjective] + [noun] → "a red car" (NOT "a car red")',
-            examples: [
-              { en: 'A small brown dog (NOT: a dog small brown)', es: 'Un perro pequeño café' },
-              { en: 'A beautiful old house', es: 'Una casa vieja hermosa' },
-              { en: 'My new blue backpack', es: 'Mi mochila azul nueva' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Describe 3 objetos de tu habitación usando colores y adjetivos. ¡Usa frases completas!',
-        hint: 'Ejemplo: "I have a small black desk. My phone is white and new. There is a big green plant near my window."'
-      }
-    },
-    {
-      id: 'a1_time', emoji: '📅',
-      title: 'Days, Months & Time', titleEs: 'Días, meses y expresiones de tiempo',
-      description: 'Habla de fechas, horarios y rutinas temporales.', tag: 'vocabulary', duration: '20 min', color: '#FFE66D',
-      vocabulary: [
-        { en: 'Monday, Tuesday, Wednesday...', es: 'Lunes, Martes, Miércoles...', example: '"My class is on Monday."' },
-        { en: 'January, February, March...', es: 'Enero, Febrero, Marzo...', example: '"My birthday is in October."' },
-        { en: 'Today / Tomorrow / Yesterday', es: 'Hoy / Mañana / Ayer', example: '"I have an exam tomorrow."' },
-        { en: 'Morning / Afternoon / Night', es: 'Mañana / Tarde / Noche', example: '"I study in the morning."' },
-        { en: 'What time is it? / It is...', es: '¿Qué hora es? / Son las...', example: '"It is three thirty."' },
-      ],
-      grammar: {
-        title: 'Preposiciones de tiempo: IN / ON / AT',
-        rules: [
-          { title: 'La regla IN / ON / AT',
-            formula: 'IN → meses, años, estaciones | ON → días, fechas | AT → horas exactas',
-            examples: [
-              { en: 'My birthday is IN March.', es: 'Mi cumpleaños es en marzo.' },
-              { en: 'Class is ON Monday. / ON December 25th.', es: 'La clase es el lunes. / El 25 de diciembre.' },
-              { en: 'We start AT 8 o\'clock. / AT noon.', es: 'Empezamos a las 8. / Al mediodía.' },
-              { en: 'IN the morning / AT night (excepción)', es: 'En la mañana / De noche' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Escribe en inglés: (1) Hoy es lunes 19 de abril. (2) Mi clase es a las 9 de la mañana. (3) Mi cumpleaños es en julio. (4) Hay clase el viernes.',
-        hint: 'Recuerda: Today is... / My class is at... / My birthday is in... / Class is on...'
-      }
-    },
-    {
-      id: 'a1_food', emoji: '🍽️',
-      title: 'Food & Drinks', titleEs: 'Comida, bebidas y gustos',
-      description: 'Ordena comida y habla de lo que te gusta comer.', tag: 'communication', duration: '20 min', color: '#A8E063',
-      vocabulary: [
-        { en: 'Breakfast / Lunch / Dinner', es: 'Desayuno / Almuerzo / Cena', example: '"I eat breakfast at 7 AM."' },
-        { en: 'Water / Coffee / Juice / Milk', es: 'Agua / Café / Jugo / Leche', example: '"Can I have a coffee, please?"' },
-        { en: 'Rice / Bread / Chicken / Salad', es: 'Arroz / Pan / Pollo / Ensalada', example: '"I like rice and beans."' },
-        { en: 'I like / I love / I hate / I don\'t like', es: 'Me gusta / Me encanta / Odio / No me gusta', example: '"I love pizza but I don\'t like fish."' },
-        { en: 'I am hungry / I am thirsty', es: 'Tengo hambre / Tengo sed', example: '"I am hungry. Can we eat?"' },
-      ],
-      grammar: {
-        title: 'Expresar gustos: LIKE + sustantivo / verb-ing',
-        rules: [
-          { title: 'I like / I don\'t like / I love',
-            formula: 'I like/love/hate + [noun] OR [verb + -ing]',
-            examples: [
-              { en: 'I like pizza. I love cooking!', es: 'Me gusta la pizza. ¡Me encanta cocinar!' },
-              { en: 'She doesn\'t like spicy food.', es: 'A ella no le gusta la comida picante.' },
-              { en: 'Do you like sushi? — Yes, I love it!', es: '¿Te gusta el sushi? — ¡Sí, me encanta!' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Escribe 4 cosas que te gustan/encantan y 2 que no te gustan de comer o beber.',
-        hint: 'Ejemplo: "I love pizza and mango juice. I like rice and beans. I don\'t like coffee or spicy food."'
-      }
-    },
+  A1:[
+    {id:'a1_greet',emoji:'👋',title:'Greetings & Introductions',titleEs:'Saludos y presentaciones',description:'Saluda y preséntate en inglés.',tag:'phrases',dur:'15 min',color:'#6C63FF',
+     vocab:[{en:'Hello / Hi',es:'Hola',ex:'"Hello! My name is Ana."'},{en:'Good morning / afternoon',es:'Buenos días / tardes',ex:'"Good morning, how are you?"'},{en:'Goodbye / See you',es:'Adiós / Hasta luego',ex:'"Goodbye! See you tomorrow."'},{en:'Please / Thank you',es:'Por favor / Gracias',ex:'"Can you help me, please?"'},{en:'Sorry / Excuse me',es:'Lo siento / Disculpe',ex:'"Excuse me, where is the bathroom?"'},{en:'Nice to meet you',es:'Mucho gusto',ex:'"Nice to meet you! I\'m Carlos."'}],
+     grammar:{title:'Verb "To Be" — Presentaciones',rules:[
+       {title:'Afirmativo',formula:'I am / You are / He is / She is / We are / They are',ex:[{en:'I am Ana. I am from Colombia.',es:'Soy Ana. Soy de Colombia.'},{en:'She is my teacher.',es:'Ella es mi maestra.'},{en:'We are students.',es:'Somos estudiantes.'}]},
+       {title:'Preguntas esenciales',formula:'What is your name? / How are you? / Where are you from?',ex:[{en:'What is your name? → My name is...',es:'¿Cómo te llamas? → Me llamo...'},{en:'How are you? → I am fine, thanks.',es:'¿Cómo estás? → Estoy bien, gracias.'},{en:'Where are you from? → I am from Mexico.',es:'¿De dónde eres? → Soy de México.'}]}
+     ]},
+     practice:{q:'✍️ Escribe una presentación: nombre, país, edad y cómo estás. (4 oraciones mínimo)',h:'Ejemplo: "Hello! My name is Ana. I am from Colombia. I am 21 years old. I am fine today."'}},
+    {id:'a1_numbers',emoji:'🔢',title:'Numbers & Prices',titleEs:'Números y precios',description:'Del 1 al 100, edades y precios.',tag:'vocabulary',dur:'20 min',color:'#FF6B6B',
+     vocab:[{en:'1–10: one, two, three...',es:'1–10: uno, dos, tres...',ex:'"I have three cats."'},{en:'11–20: eleven, twelve, thirteen...',es:'11–20: once, doce, trece...',ex:'"She is fifteen years old."'},{en:'20, 30, 40... 100',es:'Twenty, thirty, forty... hundred',ex:'"One hundred students."'},{en:'How much? / How many?',es:'¿Cuánto? / ¿Cuántos?',ex:'"How much is this? Five dollars."'},{en:'First / Second / Third',es:'Primero / Segundo / Tercero',ex:'"I live on the third floor."'}],
+     grammar:{title:'Preguntar edades y precios',rules:[
+       {title:'Edad',formula:'How old are you? → I am [N] years old.',ex:[{en:'How old are you? — I am 21.',es:'¿Cuántos años tienes? — Tengo 21.'},{en:'She is thirty-five years old.',es:'Ella tiene 35 años.'}]},
+       {title:'Precios',formula:'How much is/are [item]? → It costs / They cost $[N].',ex:[{en:'How much is the coffee? — Three dollars.',es:'¿Cuánto cuesta el café? — Tres dólares.'},{en:'How much are the tickets? — Fifty dollars.',es:'¿Cuánto cuestan los boletos? — Cincuenta dólares.'}]}
+     ]},
+     practice:{q:'✍️ Traduce: (1) Tengo 22 años. (2) El libro cuesta 15 dólares. (3) Hay 30 estudiantes. (4) ¿Cuánto cuesta?',h:'I am... / It costs... / There are... / How much is it?'}},
+    {id:'a1_colors',emoji:'🎨',title:'Colors & Descriptions',titleEs:'Colores y adjetivos',description:'Describe objetos con colores y adjetivos.',tag:'vocabulary',dur:'15 min',color:'#4ECDC4',
+     vocab:[{en:'Red / Blue / Green',es:'Rojo / Azul / Verde',ex:'"Her car is red."'},{en:'Yellow / Orange / Purple',es:'Amarillo / Naranja / Morado',ex:'"The sky is orange."'},{en:'Black / White / Brown',es:'Negro / Blanco / Café',ex:'"He has a black dog."'},{en:'Big / Small / Tall / Short',es:'Grande / Pequeño / Alto / Bajo',ex:'"I live in a big city."'},{en:'New / Old / Beautiful / Fast',es:'Nuevo / Viejo / Bonito / Rápido',ex:'"This is my new phone."'}],
+     grammar:{title:'Adjetivos: siempre ANTES del sustantivo',rules:[
+       {title:'Posición del adjetivo',formula:'[adjective] + [noun] — En inglés el adjetivo va ANTES',ex:[{en:'A red car (NOT: a car red ✗)',es:'Un carro rojo'},{en:'A beautiful old house',es:'Una casa vieja hermosa'},{en:'My new blue backpack',es:'Mi mochila azul nueva'}]}
+     ]},
+     practice:{q:'✍️ Describe 3 objetos de tu cuarto. Usa color + adjetivo + objeto.',h:'Ejemplo: "I have a small black desk. My phone is white and new."'}},
+    {id:'a1_time',emoji:'📅',title:'Days, Months & Time',titleEs:'Días, meses y tiempo',description:'Fechas, horarios e IN/ON/AT.',tag:'vocabulary',dur:'20 min',color:'#FFE66D',
+     vocab:[{en:'Mon / Tue / Wed / Thu / Fri / Sat / Sun',es:'Lun / Mar / Mié / Jue / Vie / Sáb / Dom',ex:'"Class is on Monday."'},{en:'January — December',es:'Enero — Diciembre',ex:'"My birthday is in March."'},{en:'Today / Tomorrow / Yesterday',es:'Hoy / Mañana / Ayer',ex:'"I have an exam tomorrow."'},{en:'Morning / Afternoon / Evening / Night',es:'Mañana / Tarde / Noche / Noche',ex:'"I study in the morning."'}],
+     grammar:{title:'IN / ON / AT — Preposiciones de tiempo',rules:[
+       {title:'La regla de oro',formula:'IN → meses/años/estaciones | ON → días/fechas | AT → horas exactas',ex:[{en:'My birthday is IN March.',es:'Mi cumpleaños es en marzo.'},{en:'Class is ON Monday / ON December 25.',es:'La clase es el lunes / El 25 de diciembre.'},{en:'We start AT 9 o\'clock. / AT noon.',es:'Empezamos a las 9. / Al mediodía.'},{en:'IN the morning (excepción) / AT night',es:'En la mañana / De noche'}]}
+     ]},
+     practice:{q:'✍️ Escribe en inglés: Hoy es lunes. Mi clase es a las 9. Mi cumpleaños es en octubre. Hay clase el viernes.',h:'Today is... / My class is at... / My birthday is in... / Class is on...'}},
+    {id:'a1_food',emoji:'🍽️',title:'Food & Likes',titleEs:'Comida y gustos',description:'Comida, bebidas y expresar gustos.',tag:'communication',dur:'20 min',color:'#A8E063',
+     vocab:[{en:'Breakfast / Lunch / Dinner',es:'Desayuno / Almuerzo / Cena',ex:'"I eat breakfast at 7."'},{en:'Water / Coffee / Juice / Milk',es:'Agua / Café / Jugo / Leche',ex:'"Can I have a coffee, please?"'},{en:'Rice / Bread / Chicken / Vegetables',es:'Arroz / Pan / Pollo / Verduras',ex:'"I like rice and beans."'},{en:'I like / I love / I don\'t like / I hate',es:'Me gusta / Me encanta / No me gusta / Odio',ex:'"I love pizza but I don\'t like fish."'}],
+     grammar:{title:'Expresar gustos: LIKE + noun/verb-ing',rules:[
+       {title:'I like / love / hate',formula:'I like/love/hate + [noun] OR [verb + -ing]',ex:[{en:'I love cooking! / I like pizza.',es:'¡Me encanta cocinar! / Me gusta la pizza.'},{en:'She doesn\'t like spicy food.',es:'A ella no le gusta la comida picante.'},{en:'Do you like sushi? — Yes, I love it!',es:'¿Te gusta el sushi? — ¡Sí, me encanta!'}]}
+     ]},
+     practice:{q:'✍️ Escribe 4 cosas que te gustan/encantan y 2 que no te gustan de comer o beber.',h:'I love... / I like... / I don\'t like... / I hate...'}}
   ],
-
-  A2: [
-    {
-      id: 'a2_present_simple', emoji: '⏰',
-      title: 'Present Simple — Daily Routines', titleEs: 'Presente simple — Rutinas diarias',
-      description: 'Habla de hábitos y actividades que haces regularmente.', tag: 'grammar', duration: '25 min', color: '#6C63FF',
-      vocabulary: [
-        { en: 'Wake up / Get up', es: 'Despertar / Levantarse', example: '"I wake up at 6 AM every day."' },
-        { en: 'Have breakfast / go to school', es: 'Desayunar / ir a la escuela', example: '"She has breakfast at 7."' },
-        { en: 'Study / Work / Exercise', es: 'Estudiar / Trabajar / Ejercitarse', example: '"I exercise three times a week."' },
-        { en: 'Always / Usually / Sometimes / Never', es: 'Siempre / Usualmente / A veces / Nunca', example: '"I always drink coffee in the morning."' },
-        { en: 'Every day / On weekdays / On weekends', es: 'Todos los días / Entre semana / Los fines de semana', example: '"I study on weekdays."' },
-      ],
-      grammar: {
-        title: 'Present Simple — Reglas completas',
-        rules: [
-          { title: '3ª persona: agrega -S (o -ES)',
-            formula: 'I/You/We/They + verb | He/She/It + verb-s/-es',
-            examples: [
-              { en: 'I study → She studIES (y → ies)', es: 'Yo estudio → Ella estudia' },
-              { en: 'I go → He GOES | I watch → She watchES', es: 'Yo voy → Él va | Yo veo → Ella ve' },
-            ]},
-          { title: 'Negativo: DON\'T / DOESN\'T',
-            formula: 'I/You/We/They don\'t + verb | He/She/It doesn\'t + verb (base)',
-            examples: [
-              { en: 'I don\'t eat meat.', es: 'No como carne.' },
-              { en: 'She doesn\'t like Mondays.', es: 'A ella no le gustan los lunes.' },
-            ]},
-          { title: 'Preguntas: DO / DOES',
-            formula: 'Do you + verb? | Does he/she + verb? → Yes, I do / No, she doesn\'t',
-            examples: [
-              { en: 'Do you exercise? — Yes, I do. Every morning.', es: '¿Haces ejercicio? — Sí, cada mañana.' },
-              { en: 'Does she work here? — No, she doesn\'t.', es: '¿Trabaja ella aquí? — No.' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Describe tu rutina diaria en inglés (mínimo 5 oraciones). Incluye: wake up, breakfast, school/work, afternoon, night. Usa adverbios de frecuencia (always, usually, sometimes).',
-        hint: 'Ejemplo: "I usually wake up at 7 AM. I always have breakfast before class. I study at university from 9 to 2..."'
-      }
-    },
-    {
-      id: 'a2_past_simple', emoji: '⏪',
-      title: 'Past Simple — Yesterday', titleEs: 'Pasado simple — Lo que hiciste',
-      description: 'Cuenta eventos y experiencias del pasado.', tag: 'grammar', duration: '30 min', color: '#FF6B6B',
-      vocabulary: [
-        { en: 'Yesterday / Last week / Last year', es: 'Ayer / La semana pasada / El año pasado', example: '"I went to the movies yesterday."' },
-        { en: '[Number] days/years ago', es: 'Hace [número] días/años', example: '"She moved here 3 months ago."' },
-        { en: 'Regular: work→worked, study→studied', es: 'Regulares: agregan -ed', example: '"I worked until 8 PM."' },
-        { en: 'Irregular: go→went, eat→ate, see→saw, have→had', es: 'Irregulares: cambian de forma', example: '"We went to a party last night."' },
-        { en: 'Enjoy / Travel / Meet / Buy / Come', es: 'Disfrutar / Viajar / Conocer / Comprar / Venir', example: '"I enjoyed the concert."' },
-      ],
-      grammar: {
-        title: 'Past Simple — Regular, Irregular, Negativo',
-        rules: [
-          { title: 'Regulares: verbo + -ED',
-            formula: 'work→worked | play→played | study→studied | travel→travelled',
-            examples: [
-              { en: 'I worked until 6 PM yesterday.', es: 'Trabajé hasta las 6 PM ayer.' },
-              { en: 'She studied all weekend.', es: 'Ella estudió todo el fin de semana.' },
-            ]},
-          { title: 'Irregulares más importantes',
-            formula: 'go→went | eat→ate | have→had | see→saw | come→came | buy→bought | get→got',
-            examples: [
-              { en: 'We went to a restaurant last night.', es: 'Fuimos a un restaurante anoche.' },
-              { en: 'I had a great time! She saw a good movie.', es: '¡Lo pasé genial! Ella vio una buena película.' },
-            ]},
-          { title: 'Negativo y preguntas con DID',
-            formula: 'I didn\'t + verb (base) | Did you + verb? → Yes, I did / No, I didn\'t',
-            examples: [
-              { en: 'I didn\'t go to the party. (NOT: I didn\'t went)', es: 'No fui a la fiesta.' },
-              { en: 'Did you eat breakfast? — No, I didn\'t.', es: '¿Desayunaste? — No.' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Escribe en inglés lo que hiciste ayer. Incluye al menos 5 actividades usando verbos regulares E irregulares.',
-        hint: 'Ejemplo: "Yesterday I woke up at 8 AM. I ate breakfast and then went to university. I studied for 3 hours and then met my friend..."'
-      }
-    },
-    {
-      id: 'a2_future', emoji: '🔮',
-      title: 'Future — Plans & Predictions', titleEs: 'Futuro — Planes y predicciones',
-      description: 'Habla del futuro con WILL y GOING TO.', tag: 'grammar', duration: '25 min', color: '#4ECDC4',
-      vocabulary: [
-        { en: 'Tomorrow / Next week / Next year', es: 'Mañana / La próxima semana / El próximo año', example: '"I\'m going to travel next summer."' },
-        { en: 'Plan / Hope / Expect / Want', es: 'Planear / Esperar / Planificar / Querer', example: '"I plan to study abroad."' },
-        { en: 'Maybe / Probably / Definitely / Never', es: 'Quizás / Probablemente / Definitivamente / Nunca', example: '"I will probably go to the gym."' },
-        { en: 'Soon / Later / In the future / Eventually', es: 'Pronto / Después / En el futuro / Eventualmente', example: '"She will come soon."' },
-      ],
-      grammar: {
-        title: 'GOING TO vs WILL — cuándo usar cada uno',
-        rules: [
-          { title: 'GOING TO — Planes ya decididos',
-            formula: 'I am/is/are going to + verb (tengo un plan concreto ya)',
-            examples: [
-              { en: 'I\'m going to study Systems Engineering.', es: 'Voy a estudiar Ingeniería en Sistemas. (ya lo decidí)' },
-              { en: 'She\'s going to travel to Spain next summer.', es: 'Ella va a viajar a España el próximo verano.' },
-            ]},
-          { title: 'WILL — Decisión espontánea o predicción',
-            formula: 'I will + verb (decisión en el momento / predicción del futuro)',
-            examples: [
-              { en: 'I\'ll help you! (I just decided right now)', es: '¡Te ayudo! (decisión en este momento)' },
-              { en: 'I think it will rain tomorrow. (prediction)', es: 'Creo que va a llover mañana. (predicción)' },
-              { en: 'In 10 years, AI will change everything.', es: 'En 10 años, la IA cambiará todo.' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Escribe: (1) 3 planes que tienes para tu futuro (usa going to). (2) 2 predicciones sobre tecnología o el mundo (usa will). (3) Algo que decidiste hacer ahora mismo (usa will).',
-        hint: 'Ejemplo: "I am going to graduate next year. Technology will change medicine completely. — Ok, I\'ll send that email right now!"'
-      }
-    },
+  A2:[
+    {id:'a2_present',emoji:'⏰',title:'Present Simple — Routines',titleEs:'Presente simple — Rutinas',description:'Hábitos, rutinas y frecuencia.',tag:'grammar',dur:'25 min',color:'#6C63FF',
+     vocab:[{en:'Wake up / Get up / Go to bed',es:'Despertar / Levantarse / Acostarse',ex:'"I wake up at 7 every day."'},{en:'Always / Usually / Often / Sometimes / Never',es:'Siempre / Usualmente / A menudo / A veces / Nunca',ex:'"I always drink coffee."'},{en:'Every day / On weekdays / On weekends',es:'Todos los días / Entre semana / Fines de semana',ex:'"I study on weekdays."'}],
+     grammar:{title:'Present Simple — Reglas completas',rules:[
+       {title:'3ª persona: agrega -S / -ES',formula:'I/You/We/They + verb | He/She/It + verb-s/-es',ex:[{en:'I study → She studIES (y→ies)',es:'Yo estudio → Ella estudia'},{en:'I go → He GOES | watch → watchES',es:'Yo voy → Él va'}]},
+       {title:'Negativo: DON\'T / DOESN\'T',formula:'I/You don\'t + verb | He/She doesn\'t + verb (base)',ex:[{en:'I don\'t eat meat.',es:'No como carne.'},{en:'She doesn\'t like Mondays.',es:'A ella no le gustan los lunes.'}]},
+       {title:'Preguntas: DO / DOES',formula:'Do you...? / Does he...? → Yes, I do / No, she doesn\'t',ex:[{en:'Do you exercise? — Yes, I do.',es:'¿Haces ejercicio? — Sí.'},{en:'Does she work here? — No, she doesn\'t.',es:'¿Trabaja aquí? — No.'}]}
+     ]},
+     practice:{q:'✍️ Describe tu rutina diaria en 5 oraciones. Usa adverbios de frecuencia.',h:'I usually wake up at... / I always... / I sometimes... / I never...'}},
+    {id:'a2_past',emoji:'⏪',title:'Past Simple',titleEs:'Pasado simple',description:'Cuenta lo que hiciste en el pasado.',tag:'grammar',dur:'30 min',color:'#FF6B6B',
+     vocab:[{en:'Yesterday / Last week / ... ago',es:'Ayer / La semana pasada / hace...',ex:'"I went to the gym yesterday."'},{en:'Regular: work→worked, study→studied',es:'Regulares (-ed)',ex:'"I studied for 3 hours."'},{en:'Irregular: go→went, eat→ate, have→had, see→saw',es:'Irregulares (cambian)',ex:'"We went to a party."'}],
+     grammar:{title:'Past Simple — Regular, Irregular, Negativo',rules:[
+       {title:'Regulares: +ED',formula:'work→worked | play→played | study→studied | travel→travelled',ex:[{en:'I worked until 8 PM.',es:'Trabajé hasta las 8 PM.'},{en:'She studied all weekend.',es:'Ella estudió todo el fin de semana.'}]},
+       {title:'Irregulares clave',formula:'go→went | eat→ate | have→had | see→saw | buy→bought | come→came | get→got',ex:[{en:'We went to a restaurant.',es:'Fuimos a un restaurante.'},{en:'I had a great time!',es:'¡Lo pasé genial!'}]},
+       {title:'Negativo y preguntas con DID',formula:'didn\'t + verb (base) | Did you...? → Yes/No',ex:[{en:'I didn\'t go to the party. (NOT: didn\'t went)',es:'No fui a la fiesta.'},{en:'Did you eat? — No, I didn\'t.',es:'¿Comiste? — No.'}]}
+     ]},
+     practice:{q:'✍️ Escribe lo que hiciste ayer (5 oraciones). Usa verbos regulares e irregulares.',h:'Yesterday I woke up at... / I ate... / I went... / I studied...'}},
+    {id:'a2_future',emoji:'🔮',title:'Future: Will & Going To',titleEs:'Futuro: Will y Going To',description:'Planes y predicciones del futuro.',tag:'grammar',dur:'25 min',color:'#4ECDC4',
+     vocab:[{en:'Tomorrow / Next week / Next year',es:'Mañana / La próxima semana / El próximo año',ex:'"I\'m going to travel next month."'},{en:'Plan / Hope / Want / Expect',es:'Planear / Esperar / Querer',ex:'"I plan to study abroad."'},{en:'Maybe / Probably / Definitely',es:'Quizás / Probablemente / Definitivamente',ex:'"It will probably rain."'}],
+     grammar:{title:'GOING TO vs WILL',rules:[
+       {title:'GOING TO — plan ya decidido',formula:'I am/is/are going to + verb',ex:[{en:'I\'m going to study Systems Engineering.',es:'Voy a estudiar Ingeniería. (ya decidido)'},{en:'She\'s going to travel to Spain.',es:'Ella va a viajar a España.'}]},
+       {title:'WILL — decisión espontánea o predicción',formula:'I will / I\'ll + verb',ex:[{en:'I\'ll help you! (right now)',es:'¡Te ayudo! (decisión espontánea)'},{en:'I think AI will change everything.',es:'Creo que la IA cambiará todo.'}]}
+     ]},
+     practice:{q:'✍️ (1) 3 planes (going to). (2) 2 predicciones sobre tecnología (will). (3) Una decisión espontánea (will).',h:'I am going to... / I will probably... / OK, I\'ll do it now!'}}
   ],
-
-  B1: [
-    {
-      id: 'b1_present_perfect', emoji: '✨',
-      title: 'Present Perfect — Experience', titleEs: 'Presente perfecto — Experiencias de vida',
-      description: 'Habla de experiencias usando HAVE + participio pasado.', tag: 'grammar', duration: '30 min', color: '#6C63FF',
-      vocabulary: [
-        { en: 'Have you ever...?', es: '¿Alguna vez has...?', example: '"Have you ever eaten sushi?"' },
-        { en: 'I have never...', es: 'Nunca he...', example: '"I have never been to Paris."' },
-        { en: 'Already / Yet / Just / Still', es: 'Ya / Todavía / Recién / Aún', example: '"I\'ve already finished my homework."' },
-        { en: 'Past Participles: been, done, eaten, seen, met, written, won', es: 'Participios irregulares comunes', example: '"I\'ve seen that movie twice."' },
-        { en: 'For (duration) / Since (starting point)', es: 'Por (duración) / Desde (punto de inicio)', example: '"She\'s worked here for 3 years."' },
-      ],
-      grammar: {
-        title: 'Present Perfect: HAVE + Past Participle',
-        rules: [
-          { title: 'Forma básica',
-            formula: 'I/You/We/They HAVE + p.p. | He/She/It HAS + p.p.',
-            examples: [
-              { en: 'I have visited 5 countries.', es: 'He visitado 5 países.' },
-              { en: 'She has lived here for 3 years.', es: 'Ella ha vivido aquí por 3 años.' },
-            ]},
-          { title: 'EVER / NEVER — experiencias de vida',
-            formula: 'Have you EVER + p.p.? | I have NEVER + p.p.',
-            examples: [
-              { en: 'Have you ever tried Indian food? — Yes, I have!', es: '¿Has probado comida india? — ¡Sí!' },
-              { en: 'I have never broken a bone.', es: 'Nunca me he roto un hueso.' },
-            ]},
-          { title: 'FOR vs SINCE',
-            formula: 'FOR + duración (for 2 years) | SINCE + punto de inicio (since 2022)',
-            examples: [
-              { en: 'I have studied English for 2 years.', es: 'He estudiado inglés por 2 años.' },
-              { en: 'She has lived here since she was a child.', es: 'Ella ha vivido aquí desde niña.' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Escribe: (1) 3 experiencias que has tenido en tu vida (I have...). (2) 2 cosas que nunca has hecho pero quieres hacer. (3) Pregúntale algo al tutor usando "Have you ever...?"',
-        hint: 'Ejemplo: "I have visited three countries. I have never eaten Korean food, but I want to try it. Have you ever been to Latin America?"'
-      }
-    },
-    {
-      id: 'b1_conditionals', emoji: '🤔',
-      title: 'Conditionals — If Clauses', titleEs: 'Condicionales — Oraciones con "Si"',
-      description: 'Expresa condiciones reales e hipotéticas.', tag: 'grammar', duration: '35 min', color: '#FF6B6B',
-      vocabulary: [
-        { en: 'If / Unless / As long as', es: 'Si / A menos que / Mientras que', example: '"If it rains, I will stay home."' },
-        { en: 'Would / Could / Might', es: 'Condicional modal (habría, podría, tal vez)', example: '"If I had more time, I would learn Japanese."' },
-        { en: '1st Conditional: possible/real', es: '1er Condicional: situaciones posibles y reales', example: '"If I pass the exam, I will celebrate."' },
-        { en: '2nd Conditional: hypothetical/imaginary', es: '2do Condicional: situaciones imaginarias', example: '"If I were a superhero, I would fly."' },
-      ],
-      grammar: {
-        title: '1st and 2nd Conditionals',
-        rules: [
-          { title: '1st Conditional — Real y probable',
-            formula: 'If + Present Simple, WILL + verb (situación que puede pasar)',
-            examples: [
-              { en: 'If I study hard, I will pass the exam.', es: 'Si estudio duro, pasaré el examen.' },
-              { en: 'If it doesn\'t rain, we\'ll go to the beach.', es: 'Si no llueve, iremos a la playa.' },
-              { en: 'What will you do if you don\'t get the job?', es: '¿Qué harás si no obtienes el trabajo?' },
-            ]},
-          { title: '2nd Conditional — Hipotético e imaginario',
-            formula: 'If + Past Simple, WOULD + verb (situación imaginaria, no real ahora)',
-            examples: [
-              { en: 'If I were a millionaire, I would travel the world.', es: 'Si fuera millonario, viajaría por el mundo.' },
-              { en: 'If I could code anything, I would build a learning AI.', es: 'Si pudiera programar cualquier cosa, haría una IA de aprendizaje.' },
-              { en: '⚠️ Use WERE (not was) for all persons in 2nd conditional.', es: '⚠️ Se usa WERE para todas las personas, no was.' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Responde estas 3 preguntas en inglés: (1) "What will you do if you graduate with honors?" (2) "If you could live in any country, where would you live and why?" (3) "What will happen if AI becomes smarter than humans?"',
-        hint: 'Usa: If I graduate..., I will... | If I could live..., I would choose... | If AI becomes..., it will...'
-      }
-    },
-    {
-      id: 'b1_phrasal', emoji: '🗣️',
-      title: 'Phrasal Verbs — Everyday English', titleEs: 'Verbos frasales — Inglés cotidiano',
-      description: 'Los phrasal verbs más usados en conversaciones reales.', tag: 'vocabulary', duration: '25 min', color: '#4ECDC4',
-      vocabulary: [
-        { en: 'Give up', es: 'Rendirse / Dejar de hacer algo', example: '"Don\'t give up on your dreams!"' },
-        { en: 'Figure out', es: 'Resolver / Descubrir', example: '"I can\'t figure out this bug in my code."' },
-        { en: 'Come up with', es: 'Ocurrirse una idea / Idear', example: '"She came up with a brilliant solution."' },
-        { en: 'Run out of', es: 'Quedarse sin algo', example: '"We ran out of coffee. I need to buy more."' },
-        { en: 'Get along with', es: 'Llevarse bien con', example: '"I get along well with my teammates."' },
-        { en: 'Put off', es: 'Posponer / Procrastinar', example: '"Stop putting off your assignments!"' },
-        { en: 'Look up', es: 'Buscar (diccionario/internet)', example: '"Just look it up on Google."' },
-        { en: 'Take care of / Break down / Log in', es: 'Cuidar / Fallar/romperse / Iniciar sesión', example: '"My laptop broke down yesterday."' },
-      ],
-      grammar: {
-        title: 'Phrasal Verbs: Separables vs Inseparables',
-        rules: [
-          { title: 'Separables: el objeto puede ir en medio',
-            formula: 'Turn off the TV = Turn the TV off = Turn IT off (con pronombres, siempre en medio)',
-            examples: [
-              { en: 'Turn off the lights → Turn the lights off → Turn them off ✓', es: 'Apaga las luces / Apágalas' },
-              { en: 'I need to figure out this problem → figure it out ✓', es: 'Necesito resolver este problema.' },
-            ]},
-          { title: 'Inseparables: el objeto SIEMPRE va después',
-            formula: 'look after + [person] → NEVER separate them',
-            examples: [
-              { en: 'I look after my sister. ✓ (NOT: I look my sister after ✗)', es: 'Cuido a mi hermana.' },
-              { en: 'She gets along with everyone at work.', es: 'Ella se lleva bien con todos en el trabajo.' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Escribe 6 oraciones usando phrasal verbs diferentes de la lección. Habla de situaciones reales de tu vida (estudios, tecnología, amistades).',
-        hint: 'Ejemplo: "I sometimes put off my coding assignments. I always figure out problems eventually. I ran out of ideas for my project..."'
-      }
-    },
-    {
-      id: 'b1_opinions', emoji: '💬',
-      title: 'Expressing Opinions & Debate', titleEs: 'Expresar opiniones y debatir',
-      description: 'Expresa, defiende y contrasta opiniones con fluidez.', tag: 'communication', duration: '30 min', color: '#FFE66D',
-      vocabulary: [
-        { en: 'In my opinion / I think / I believe / I feel', es: 'En mi opinión / Creo / Considero / Siento', example: '"In my opinion, AI will revolutionize education."' },
-        { en: 'I agree / I disagree / I\'m not sure about that', es: 'Estoy de acuerdo / No estoy de acuerdo / No estoy seguro', example: '"I agree with you on that point."' },
-        { en: 'However / Although / Despite / On the contrary', es: 'Sin embargo / Aunque / A pesar de / Al contrario', example: '"However, there are some serious concerns."' },
-        { en: 'On one hand... on the other hand...', es: 'Por un lado... por otro lado...', example: '"On one hand it\'s useful; on the other, it\'s risky."' },
-        { en: 'That\'s a good point / Fair enough / That said...', es: 'Buen punto / Es justo / Dicho esto...', example: '"That\'s a good point! I hadn\'t thought of that."' },
-      ],
-      grammar: {
-        title: 'Conectores de opinión y contraste',
-        rules: [
-          { title: 'Estructura de un argumento',
-            formula: 'Opinion → Evidence → Counterargument → Conclusion',
-            examples: [
-              { en: 'I think AI is useful. For example, it helps doctors diagnose diseases. However, some people worry about privacy. Overall, the benefits outweigh the risks.', es: 'Creo que la IA es útil. Por ejemplo, ayuda a los médicos. Sin embargo, hay preocupaciones de privacidad. En general, los beneficios superan los riesgos.' },
-              { en: 'Although social media can be addictive, it connects people worldwide.', es: 'Aunque las redes sociales pueden ser adictivas, conectan a personas en todo el mundo.' },
-            ]}
-        ]
-      },
-      practice: {
-        prompt: '✍️ Escribe tu opinión sobre este tema (mínimo 5 oraciones): "Should all university students be required to learn programming?" Usa conectores de opinión y contraste.',
-        hint: 'Estructura: I think... / For example... / However... / On the other hand... / In conclusion, I believe...'
-      }
-    },
+  B1:[
+    {id:'b1_perfect',emoji:'✨',title:'Present Perfect — Experience',titleEs:'Presente perfecto — Experiencias',description:'Have + participio para experiencias de vida.',tag:'grammar',dur:'30 min',color:'#6C63FF',
+     vocab:[{en:'Have you ever...?',es:'¿Alguna vez has...?',ex:'"Have you ever eaten sushi?"'},{en:'I have never...',es:'Nunca he...',ex:'"I have never been to Paris."'},{en:'Already / Yet / Just / Still',es:'Ya / Todavía / Recién / Aún',ex:'"I\'ve already finished!"'},{en:'For (3 years) / Since (2022)',es:'Por (3 años) / Desde (2022)',ex:'"I\'ve studied here for 2 years."'}],
+     grammar:{title:'Present Perfect: HAVE + Past Participle',rules:[
+       {title:'Forma básica',formula:'I/You/We/They HAVE + p.p. | He/She HAS + p.p.',ex:[{en:'I have visited 5 countries.',es:'He visitado 5 países.'},{en:'She has lived here for 3 years.',es:'Ella ha vivido aquí 3 años.'}]},
+       {title:'EVER / NEVER',formula:'Have you EVER + p.p.? | I have NEVER + p.p.',ex:[{en:'Have you ever tried Indian food?',es:'¿Has probado comida india alguna vez?'},{en:'I have never broken a bone.',es:'Nunca me he roto un hueso.'}]},
+       {title:'FOR vs SINCE',formula:'FOR + duración | SINCE + punto de inicio',ex:[{en:'For 2 years / for a long time',es:'Por 2 años / por mucho tiempo'},{en:'Since 2020 / since I was a child',es:'Desde 2020 / desde que era niño'}]}
+     ]},
+     practice:{q:'✍️ (1) 3 experiencias de tu vida. (2) 2 cosas que nunca has hecho. (3) Pregúntale algo al tutor con "Have you ever...?"',h:'I have visited... / I have never tried... / Have you ever been to...?'}},
+    {id:'b1_conds',emoji:'🤔',title:'Conditionals 1st & 2nd',titleEs:'Condicionales 1 y 2',description:'Situaciones reales e hipotéticas.',tag:'grammar',dur:'35 min',color:'#FF6B6B',
+     vocab:[{en:'If / Unless / As long as',es:'Si / A menos que / Siempre que',ex:'"If it rains, I will stay home."'},{en:'Would / Could / Might',es:'Habría / Podría / Tal vez',ex:'"If I had time, I would travel."'}],
+     grammar:{title:'1st and 2nd Conditionals',rules:[
+       {title:'1st Conditional — posible/real',formula:'If + Present Simple, WILL + verb',ex:[{en:'If I study hard, I will pass.',es:'Si estudio duro, pasaré.'},{en:'If it doesn\'t rain, we\'ll go out.',es:'Si no llueve, saldremos.'}]},
+       {title:'2nd Conditional — hipotético',formula:'If + Past Simple, WOULD + verb (usa WERE siempre)',ex:[{en:'If I were a millionaire, I would travel.',es:'Si fuera millonario, viajaría.'},{en:'If I could code anything, I would build AI.',es:'Si pudiera programar cualquier cosa, haría IA.'}]}
+     ]},
+     practice:{q:'✍️ (1) Si ganas una beca. (2) Si pudieras vivir en cualquier país. (3) Si la IA supera a los humanos.',h:'If I get a scholarship, I will... / If I could live anywhere, I would... / If AI surpasses humans, it will...'}},
+    {id:'b1_phrasal',emoji:'🗣️',title:'Phrasal Verbs',titleEs:'Verbos frasales esenciales',description:'Los phrasal verbs más usados en conversación.',tag:'vocabulary',dur:'25 min',color:'#4ECDC4',
+     vocab:[{en:'Give up',es:'Rendirse',ex:'"Don\'t give up on your dreams!"'},{en:'Figure out',es:'Resolver/descubrir',ex:'"I can\'t figure out this bug."'},{en:'Come up with',es:'Idear/ocurrir',ex:'"She came up with a great idea."'},{en:'Run out of',es:'Quedarse sin',ex:'"We ran out of coffee."'},{en:'Get along with',es:'Llevarse bien con',ex:'"I get along well with my team."'},{en:'Put off',es:'Posponer',ex:'"Stop putting off your homework!"'},{en:'Look up / Log in',es:'Buscar / Iniciar sesión',ex:'"Just look it up online."'}],
+     grammar:{title:'Separables vs Inseparables',rules:[
+       {title:'Separables: objeto puede ir en medio',formula:'Turn off the light = Turn the light off = Turn IT off',ex:[{en:'Turn them off ✓ (with pronouns, always in middle)',es:'Apágalos ✓'},{en:'I need to figure out this problem → figure it out',es:'Necesito resolver este problema.'}]},
+       {title:'Inseparables: objeto siempre después',formula:'look after + [person] — NEVER split',ex:[{en:'I look after my sister. ✓ (NOT: look my sister after ✗)',es:'Cuido a mi hermana.'}]}
+     ]},
+     practice:{q:'✍️ 6 oraciones con phrasal verbs diferentes sobre tu vida (estudios, amistades, tecnología).',h:'I sometimes put off... / I get along with... / I ran out of ideas when...'}}
+  ],
+  B2:[
+    {id:'b2_passive',emoji:'🔄',title:'Passive Voice',titleEs:'Voz pasiva',description:'Cambia el enfoque de quién hace a qué se hace.',tag:'grammar',dur:'30 min',color:'#8B5CF6',
+     vocab:[{en:'Be + Past Participle',es:'Ser/estar + participio pasado',ex:'"The report was written by Ana."'},{en:'By [agent] — optional',es:'Por [agente] — opcional',ex:'"The app was built by our team."'},{en:'Get + p.p. (informal passive)',es:'Get + participio (informal)',ex:'"My phone got stolen yesterday."'}],
+     grammar:{title:'Passive Voice — todos los tiempos',rules:[
+       {title:'Cómo formar la voz pasiva',formula:'[Subject] + BE (tense) + Past Participle + (by agent)',ex:[{en:'Present: English is spoken in 67 countries.',es:'El inglés se habla en 67 países.'},{en:'Past: The bridge was built in 1900.',es:'El puente fue construido en 1900.'},{en:'Future: The package will be delivered tomorrow.',es:'El paquete será entregado mañana.'},{en:'Present Perfect: Three suspects have been arrested.',es:'Tres sospechosos han sido arrestados.'}]},
+       {title:'¿Cuándo usar pasiva?',formula:'Cuando el agente es desconocido, irrelevante, o queremos enfatizar el objeto',ex:[{en:'My car was stolen. (we don\'t know who)',es:'Mi carro fue robado. (no sabemos quién)'},{en:'Mistakes were made. (avoiding blame)',es:'Se cometieron errores. (evitar culpa)'}]}
+     ]},
+     practice:{q:'✍️ Transforma estas oraciones a voz pasiva: (1) Scientists discovered a new planet. (2) They will release the new iPhone next year. (3) Someone has hacked the database.',h:'A new planet was... / The new iPhone will be... / The database has been...'}},
+    {id:'b2_reported',emoji:'🗨️',title:'Reported Speech',titleEs:'Estilo indirecto',description:'Reporta lo que alguien dijo sin citar directamente.',tag:'grammar',dur:'30 min',color:'#6C63FF',
+     vocab:[{en:'Say / Tell / Ask / Wonder',es:'Decir / Decirle / Preguntar / Preguntarse',ex:'"She said she was tired."'},{en:'Backshift: tense moves back in time',es:'Retroceso temporal al reportar',ex:'"I am tired" → She said she WAS tired.'},{en:'Time expressions change too',es:'Las expresiones de tiempo también cambian',ex:'"today" → that day | "yesterday" → the day before'}],
+     grammar:{title:'Reported Speech — cambios clave',rules:[
+       {title:'Retroceso de tiempos',formula:'Present→Past | Past→Past Perfect | Will→Would | Can→Could',ex:[{en:'"I love you" → She said she LOVED him.',es:'"Te amo" → Dijo que lo amaba.'},{en:'"I will call you" → He said he WOULD call.',es:'"Te llamaré" → Dijo que llamaría.'},{en:'"I have finished" → She said she HAD finished.',es:'"He terminado" → Dijo que había terminado.'}]},
+       {title:'Preguntas reportadas',formula:'ask + [person] + if/whether | ask + [person] + wh-word + subject + verb',ex:[{en:'"Are you ok?" → He asked if I was ok.',es:'¿Estás bien? → Preguntó si estaba bien.'},{en:'"Where do you live?" → She asked where I lived.',es:'¿Dónde vives? → Preguntó dónde vivía.'}]}
+     ]},
+     practice:{q:'✍️ Reporta esta conversación: A) "I\'m going to graduate next year." B) "Did you pass all your exams?" A) "I have worked really hard this semester."',h:'She said she was going to... / She asked if... / She said she had...'}},
+    {id:'b2_modals',emoji:'💭',title:'Modal Perfects',titleEs:'Modales perfectos — Pasado modal',description:'Must have / should have / could have para especular sobre el pasado.',tag:'grammar',dur:'30 min',color:'#FF6B6B',
+     vocab:[{en:'Must have + p.p.',es:'Debe haber... (certeza sobre pasado)',ex:'"She must have missed the bus."'},{en:'Should have + p.p.',es:'Debería haber... (consejo/arrepentimiento)',ex:'"I should have studied more."'},{en:'Could have + p.p.',es:'Podría haber... (posibilidad no realizada)',ex:'"He could have won the competition."'},{en:'Might have / May have + p.p.',es:'Podría haber... (posibilidad)',ex:'"She might have left already."'}],
+     grammar:{title:'Modal + Have + Past Participle',rules:[
+       {title:'Especular sobre el pasado',formula:'modal + have + past participle',ex:[{en:'She must have been exhausted. (I\'m sure)',es:'Debe haber estado agotada. (estoy seguro)'},{en:'He might have forgotten. (possible)',es:'Podría haber olvidado. (posible)'},{en:'They can\'t have left already! (impossible)',es:'¡No pueden haber salido ya! (imposible)'}]},
+       {title:'Arrepentimiento y crítica',formula:'should have (+ p.p.) = debería haber | shouldn\'t have = no debería haber',ex:[{en:'I should have saved my work. (regret)',es:'Debería haber guardado mi trabajo.'},{en:'You shouldn\'t have said that! (criticism)',es:'¡No deberías haber dicho eso!'}]}
+     ]},
+     practice:{q:'✍️ Especula sobre estas situaciones: (1) Your friend didn\'t answer your calls. (2) The class was cancelled. (3) You got a very good grade on a test you didn\'t study for.',h:'She must have been busy / The teacher might have... / I could have gotten lucky...'}},
+    {id:'b2_collocations',emoji:'🔗',title:'Collocations & Word Pairs',titleEs:'Colocaciones — combinaciones naturales',description:'Las palabras que "van juntas" en inglés nativo.',tag:'vocabulary',dur:'25 min',color:'#4ECDC4',
+     vocab:[{en:'Make vs Do',es:'Make: crear / Do: realizar actividad',ex:'"Make a decision / Do homework"'},{en:'Strong collocations',es:'Combinaciones fuertes',ex:'"Pay attention / Take a break / Give advice"'},{en:'Verb + Noun pairs',es:'Pares verbo + sustantivo naturales',ex:'"Run a business / Meet a deadline / Miss an opportunity"'},{en:'Adj + Noun pairs',es:'Pares adjetivo + sustantivo',ex:'"Heavy rain / Strong coffee / Deep sleep / High risk"'}],
+     grammar:{title:'Make vs Do — la regla definitiva',rules:[
+       {title:'MAKE = crear, producir, resultado',formula:'Make: a mistake, a decision, money, noise, a call, an effort, friends',ex:[{en:'Don\'t make the same mistake twice.',es:'No cometas el mismo error dos veces.'},{en:'She made a huge effort to finish on time.',es:'Hizo un gran esfuerzo por terminar a tiempo.'}]},
+       {title:'DO = actividad, tarea, trabajo',formula:'Do: homework, research, business, a course, your best, exercise, damage',ex:[{en:'I need to do more research on this topic.',es:'Necesito investigar más sobre este tema.'},{en:'You did a great job! Just do your best.',es:'¡Hiciste un gran trabajo! Solo da lo mejor.'}]}
+     ]},
+     practice:{q:'✍️ Elige MAKE o DO y escribe 6 oraciones originales usando diferentes collocations de la lección.',h:'I made a big mistake when... / I need to do research about... / She made an effort to...'}}
+  ],
+  C1:[
+    {id:'c1_inversion',emoji:'🔀',title:'Inversion & Emphasis',titleEs:'Inversión y énfasis',description:'Estructuras avanzadas para énfasis dramático.',tag:'advanced',dur:'35 min',color:'#7C3AED',
+     vocab:[{en:'Not only... but also...',es:'No solo... sino también...',ex:'"Not only did she win, but she also broke the record."'},{en:'Seldom / Rarely / Hardly ever / Never',es:'Raramente / Casi nunca / Nunca',ex:'"Never have I seen such talent."'},{en:'Only when / Only if / Only then',es:'Solo cuando / Solo si / Solo entonces',ex:'"Only then did I understand the problem."'}],
+     grammar:{title:'Fronting & Inversion for Emphasis',rules:[
+       {title:'Inversión con negativos',formula:'Never/Seldom/Rarely/Hardly/No sooner + auxiliary + subject + verb',ex:[{en:'Never have I seen such a beautiful place.',es:'Nunca he visto un lugar tan hermoso.'},{en:'Rarely does she make mistakes.',es:'Rara vez comete errores.'},{en:'No sooner had I sat down than the alarm went off.',es:'Apenas me había sentado cuando sonó la alarma.'}]},
+       {title:'Inversión con ONLY',formula:'Only when/if/then/after/by + [clause], auxiliary + subject + verb',ex:[{en:'Only when I arrived did I realize the problem.',es:'Solo cuando llegué me di cuenta del problema.'},{en:'Only by working hard can you succeed.',es:'Solo trabajando duro puedes tener éxito.'}]},
+       {title:'Not only... but also / So... that',formula:'Not only did [S] + verb, but [S] also...',ex:[{en:'Not only did she speak 5 languages, but she also played violin.',es:'No solo hablaba 5 idiomas, sino que también tocaba violín.'},{en:'So complex was the algorithm that no one understood it.',es:'Tan complejo era el algoritmo que nadie lo entendía.'}]}
+     ]},
+     practice:{q:'✍️ Reescribe estas oraciones usando inversión para dar más énfasis: (1) I have never worked so hard. (2) She not only coded the app but also designed it. (3) I only understood when I tested it.',h:'Never have I... / Not only did she... / Only when I tested it did I...'}},
+    {id:'c1_cleft',emoji:'🎯',title:'Cleft Sentences & Focus',titleEs:'Oraciones escindidas — énfasis y foco',description:'It is/was... who/that para enfocar información.',tag:'advanced',dur:'30 min',color:'#6C63FF',
+     vocab:[{en:'It is/was + [focus] + that/who + [rest]',es:'Es/fue + [énfasis] + que/quien + [resto]',ex:'"It was John who broke the vase."'},{en:'What I need is... / What surprised me was...',es:'Lo que necesito es... / Lo que me sorprendió fue...',ex:'"What I love about coding is solving problems."'},{en:'The reason why... / The thing that... / The place where...',es:'La razón por la que... / La cosa que... / El lugar donde...',ex:'"The reason why I study English is to get a better job."'}],
+     grammar:{title:'Cleft Sentences — tipos y usos',rules:[
+       {title:'It-clefts — énfasis en sujeto/objeto/tiempo',formula:'It is/was + [emphasized element] + that/who + rest of sentence',ex:[{en:'It was the algorithm that caused the bug. (not the data)',es:'Fue el algoritmo el que causó el error.'},{en:'It was in 2023 that I started programming seriously.',es:'Fue en 2023 cuando empecé a programar en serio.'}]},
+       {title:'Wh-clefts (pseudo-clefts)',formula:'What + [subject] + [verb] + is/was + [emphasized element]',ex:[{en:'What I enjoy most is solving complex problems.',es:'Lo que más disfruto es resolver problemas complejos.'},{en:'What we need is better documentation.',es:'Lo que necesitamos es mejor documentación.'}]}
+     ]},
+     practice:{q:'✍️ Usa oraciones escindidas para responder: (1) ¿Qué es lo que más te gusta de Ingeniería en Sistemas? (2) ¿Por qué aprendes inglés? (3) ¿Quién o qué te inspiró a estudiar lo que estudias?',h:'What I love most about Systems Engineering is... / It is because... that I learn English / It was [person/thing] that inspired me...'}},
+    {id:'c1_academic',emoji:'🏛️',title:'Academic & Professional English',titleEs:'Inglés académico y profesional',description:'Escribe y habla con registro formal avanzado.',tag:'advanced',dur:'35 min',color:'#FF6B6B',
+     vocab:[{en:'Furthermore / Moreover / In addition',es:'Además / Por otra parte / Adicionalmente',ex:'"Furthermore, the results indicate..."'},{en:'Nevertheless / However / On the contrary',es:'Sin embargo / No obstante / Al contrario',ex:'"Nevertheless, there are limitations..."'},{en:'It can be argued that / It is worth noting',es:'Se puede argumentar que / Vale la pena señalar',ex:'"It can be argued that AI will transform education."'},{en:'With regard to / In terms of / As far as X is concerned',es:'Con respecto a / En términos de / En cuanto a X',ex:'"With regard to privacy, the policy needs revision."'}],
+     grammar:{title:'Hedging & Academic register',rules:[
+       {title:'Hedging language — no parecer absoluto',formula:'Seem / Appear / Tend to / May / Might + verb | It is likely/possible that...',ex:[{en:'The data seems to suggest a correlation.',es:'Los datos parecen sugerir una correlación.'},{en:'It would appear that the hypothesis is correct.',es:'Parecería que la hipótesis es correcta.'},{en:'AI may/might fundamentally change employment.',es:'La IA puede/podría cambiar fundamentalmente el empleo.'}]},
+       {title:'Impersonal structures',formula:'It is + adj + to/that | There is + evidence/reason + to suggest',ex:[{en:'It is essential to validate the data before analysis.',es:'Es esencial validar los datos antes del análisis.'},{en:'There is strong evidence to suggest that...',es:'Hay evidencia sólida que sugiere que...'}]}
+     ]},
+     practice:{q:'✍️ Escribe un párrafo académico corto (5-6 oraciones) argumentando si la IA debería usarse en la educación universitaria. Usa hedging y conectores formales.',h:'It can be argued that... / Furthermore... / However, it is worth noting... / Nevertheless, the evidence suggests...'}}
+  ],
+  C2:[
+    {id:'c2_nuance',emoji:'💎',title:'Nuance & Subtlety',titleEs:'Matices y sutileza en inglés',description:'Comunica ideas complejas con precisión y naturalidad.',tag:'advanced',dur:'40 min',color:'#DC2626',
+     vocab:[{en:'Barely / Scarcely / Hardly',es:'Apenas (casi no)',ex:'"I could barely hear her over the noise."'},{en:'Rather / Quite / Fairly / Pretty',es:'Bastante / Quite / Bastante / Bastante',ex:'"It\'s rather complex, but quite interesting."'},{en:'Nonetheless / Albeit / Notwithstanding',es:'Sin embargo / Aunque / No obstante',ex:'"It\'s difficult, albeit not impossible."'},{en:'Subtle / Nuanced / Implicit / Explicit',es:'Sutil / Con matices / Implícito / Explícito',ex:'"Her tone had a subtle irony."'}],
+     grammar:{title:'Gradability & Near-Native Precision',rules:[
+       {title:'Gradable vs Non-gradable adjectives',formula:'Gradable: very/quite/rather + adj | Non-gradable: absolutely/completely + adj',ex:[{en:'Very tired / rather tired / completely exhausted (not: very exhausted)',es:'Muy cansado / bastante cansado / completamente agotado'},{en:'Quite good / fairly good / absolutely perfect (not: very perfect)',es:'Bastante bueno / absolutamente perfecto'},{en:'Rather interesting / truly fascinating (not: very fascinating)',es:'Bastante interesante / verdaderamente fascinante'}]},
+       {title:'Emphatic DO/DID for insistence',formula:'I DO think... / She DOES know... / I DID warn you...',ex:[{en:'I do believe AI will change the world. (emphatic)',es:'Sí creo que la IA cambiará el mundo. (énfasis)'},{en:'She did finish the project, but it was late.',es:'Sí terminó el proyecto, pero llegó tarde.'}]}
+     ]},
+     practice:{q:'✍️ Describe una experiencia compleja (un proyecto difícil, un momento de duda, un logro importante) usando al menos 6 palabras/frases de esta lección para dar matices y precisión.',h:'It was rather challenging, albeit rewarding / I barely managed to... / I do believe the experience...'}},
+    {id:'c2_idioms',emoji:'🎭',title:'Advanced Idioms & Figurative Language',titleEs:'Modismos avanzados y lenguaje figurado',description:'Habla como un nativo con expresiones idiomáticas complejas.',tag:'advanced',dur:'35 min',color:'#7C3AED',
+     vocab:[{en:'Beat around the bush',es:'Andarse por las ramas',ex:'"Stop beating around the bush and tell me the truth."'},{en:'The tip of the iceberg',es:'La punta del iceberg',ex:'"That bug is just the tip of the iceberg."'},{en:'Bite off more than you can chew',es:'Abarcar más de lo que puedes',ex:'"I bit off more than I could chew with 5 projects."'},{en:'Go the extra mile',es:'Dar el kilómetro extra / esforzarse más',ex:'"She always goes the extra mile for her clients."'},{en:'Read between the lines',es:'Leer entre líneas',ex:'"Read between the lines — he\'s not happy."'},{en:'Burn bridges',es:'Quemar puentes',ex:'"Don\'t burn bridges — you may need them later."'}],
+     grammar:{title:'Metáfora conceptual y registro',rules:[
+       {title:'Idioms en contexto real',formula:'Usar idioms naturalmente, no forzadamente',ex:[{en:'"The presentation bombed." = failed completely',es:'"La presentación fue un desastre."'},{en:'"She nailed the interview." = did perfectly',es:'"Ella clavó la entrevista. / Lo hizo perfecto."'},{en:'"The project is on the back burner." = low priority',es:'"El proyecto está en espera / en segundo plano."'}]},
+       {title:'False friends & Register',formula:'Idioms are informal — avoid in formal/academic writing',ex:[{en:'Formal: "The proposal requires further consideration."',es:'La propuesta requiere más consideración.'},{en:'Informal: "We need to sleep on it."',es:'"Necesitamos pensarlo bien." (dormir con ello)'}]}
+     ]},
+     practice:{q:'✍️ Usa 5 idioms de la lección para describir situaciones reales de tu vida (universidad, trabajo, amistades, proyectos).',h:'I bit off more than I could chew when I... / My professor always goes the extra mile... / I realized I needed to read between the lines when...'}},
+    {id:'c2_rhetoric',emoji:'🏆',title:'Rhetoric & Persuasion',titleEs:'Retórica y persuasión avanzada',description:'Argumenta, persuade y negocia como un experto.',tag:'advanced',dur:'40 min',color:'#059669',
+     vocab:[{en:'Ethos / Pathos / Logos',es:'Credibilidad / Emoción / Lógica (triángulo retórico)',ex:'"As an expert (ethos), this data proves (logos) how urgent this is (pathos)."'},{en:'Concede & counter',es:'Conceder y refutar',ex:'"While it\'s true that X, the reality is that Y."'},{en:'Rhetorical questions',es:'Preguntas retóricas',ex:'"Can we really afford to ignore climate change?"'},{en:'Tricolon — rule of three',es:'Tricólón — regla de tres',ex:'"We came, we saw, we conquered."'}],
+     grammar:{title:'Técnicas de persuasión avanzada',rules:[
+       {title:'Conceder y refutar (concession & rebuttal)',formula:'While/Although/Granted that [concession], [stronger counter-argument]',ex:[{en:'While AI has risks, the potential benefits far outweigh them.',es:'Aunque la IA tiene riesgos, los beneficios potenciales los superan con creces.'},{en:'Granted that automation causes job loss, it also creates new industries.',es:'Aunque la automatización elimina empleos, también crea nuevas industrias.'}]},
+       {title:'Anáfora y paralelismo',formula:'Repeating structure/word for emphasis and rhythm',ex:[{en:'"We need better education. We need better infrastructure. We need better leadership."',es:'Repetición de estructura para énfasis y ritmo.'},{en:'"Not just for us, not just for our children, but for future generations."',es:'No solo para nosotros, sino para las generaciones futuras.'}]}
+     ]},
+     practice:{q:'✍️ Escribe un argumento persuasivo de 6-8 oraciones sobre este tema: "Universities should make English proficiency mandatory for all graduates." Usa: concesión/refutación, retórica, y regla de tres.',h:'While some may argue... / However, the data clearly shows... / We need this for our careers, for our country, and for our future.'}}
   ]
 };
 </script>
 
-<!-- ══════════════════════════════════
+<!-- ═══════════════════════════
      APP LOGIC
-══════════════════════════════════ -->
+═══════════════════════════ -->
 <script>
 // ── STATE ──
 let currentLevel = 'A1';
 let currentLesson = null;
 let previousView = 'dashboardView';
 let chatContext = null;
+let spkContext = null;
 let chatHistory = [];
+let spkHistory = [];
 let apiKey = '';
-let completedLessons = JSON.parse(localStorage.getItem('englishAI_completed') || '[]');
+let speechRate = 0.75;
+let completedLessons = JSON.parse(localStorage.getItem('engAI_done') || '[]');
+
+// Speech API
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+let isListening = false;
+let isSpeaking = false;
+let currentUtterance = null;
 
 // ── INIT ──
 window.onload = () => {
-  const saved = localStorage.getItem('englishAI_apiKey');
+  const saved = localStorage.getItem('engAI_key');
   if (saved) { apiKey = saved; showApp(); }
 };
 
 function startApp(e) {
   e.preventDefault();
-  const key = document.getElementById('apiKey').value.trim();
-  if (!key.startsWith('sk-')) {
-    showError('La API key debe comenzar con "sk-". Verifica que la copiaste completa desde platform.openai.com');
-    return;
-  }
-  apiKey = key;
-  localStorage.setItem('englishAI_apiKey', key);
+  const k = document.getElementById('apiKey').value.trim();
+  if (!k.startsWith('sk-')) { showError('La API key debe comenzar con "sk-". Verifica que la copiaste completa.'); return; }
+  apiKey = k;
+  localStorage.setItem('engAI_key', k);
   showApp();
 }
 
 function showApp() {
   document.getElementById('setupScreen').style.display = 'none';
   document.getElementById('mainApp').classList.add('active');
+  initSpeechRecognition();
   renderDashboard();
 }
 
 function resetApiKey() {
-  if (confirm('¿Deseas cambiar tu API Key de OpenAI?')) {
-    localStorage.removeItem('englishAI_apiKey');
-    location.reload();
-  }
+  if (confirm('¿Cambiar tu API Key de OpenAI?')) { localStorage.removeItem('engAI_key'); location.reload(); }
 }
 
 // ── LEVEL ──
+const LEVEL_INFO = {
+  A1:['🌱 A1 — Básico','Fundamentos del inglés: saludos, vocabulario esencial y gramática básica'],
+  A2:['🌿 A2 — Elemental','Verbos, rutinas y comunicación cotidiana'],
+  B1:['🌳 B1 — Intermedio','Tiempos complejos, condicionales y expresión fluida'],
+  B2:['🌲 B2 — Upper Intermediate','Voz pasiva, estilo indirecto y modales avanzados'],
+  C1:['🔥 C1 — Avanzado','Inversión, énfasis, inglés académico y profesional'],
+  C2:['💎 C2 — Proficiency','Matices, retórica y expresión casi nativa']
+};
+
 function setLevel(level, btn) {
   currentLevel = level;
   document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const info = {
-    A1: ['🌱 Nivel A1 — Básico', 'Aprende los fundamentos del inglés: saludos, vocabulario esencial y gramática básica'],
-    A2: ['🌿 Nivel A2 — Elemental', 'Consolida tu inglés con tiempos verbales y rutinas cotidianas'],
-    B1: ['🌳 Nivel B1 — Intermedio', 'Domina tiempos complejos, condicionales y expresión avanzada']
-  };
-  document.getElementById('levelTitle').textContent = info[level][0];
-  document.getElementById('levelDesc').textContent = info[level][1];
+  const [t,d] = LEVEL_INFO[level];
+  document.getElementById('levelTitle').textContent = t;
+  document.getElementById('levelDesc').textContent = d;
   showView('dashboardView');
   renderDashboard();
 }
 
 // ── DASHBOARD ──
+function allLessons() { return Object.values(LESSONS).flat(); }
+function tagLabel(t) { return {grammar:'Gramática',vocabulary:'Vocabulario',phrases:'Frases',communication:'Comunicación',advanced:'Avanzado'}[t]||t; }
+
 function renderDashboard() {
-  const grid = document.getElementById('lessonsGrid');
-  grid.innerHTML = LESSONS[currentLevel].map(lesson => {
-    const done = completedLessons.includes(lesson.id);
-    return `<div class="lesson-card ${done ? 'completed' : ''}" onclick="openLesson('${lesson.id}')">
-      <div class="lesson-card-accent" style="background:linear-gradient(90deg,${lesson.color},${lesson.color}66)"></div>
-      ${done ? '<div class="completed-badge">✓</div>' : ''}
-      <div class="lesson-emoji">${lesson.emoji}</div>
-      <h3>${lesson.title}</h3>
-      <p>${lesson.description}</p>
-      <div class="lesson-meta">
-        <span class="lesson-tag tag-${lesson.tag}">${tagLabel(lesson.tag)}</span>
-        <span class="lesson-duration">⏱ ${lesson.duration}</span>
+  document.getElementById('lessonsGrid').innerHTML = LESSONS[currentLevel].map(l => {
+    const done = completedLessons.includes(l.id);
+    return `<div class="lesson-card ${done?'completed':''}" onclick="openLesson('${l.id}')">
+      <div class="lc-bar" style="background:linear-gradient(90deg,${l.color},${l.color}66)"></div>
+      ${done?'<div class="done-badge">✓</div>':''}
+      <div class="emoji">${l.emoji}</div>
+      <h3>${l.title}</h3>
+      <p>${l.description}</p>
+      <div class="lc-meta">
+        <span class="ltag tag-${l.tag}">${tagLabel(l.tag)}</span>
+        <span class="ldur">⏱ ${l.dur}</span>
       </div>
     </div>`;
   }).join('');
 }
 
-function tagLabel(t) {
-  return { grammar:'Gramática', vocabulary:'Vocabulario', phrases:'Frases', communication:'Comunicación' }[t] || t;
-}
-
 // ── LESSON ──
 function openLesson(id) {
-  const all = Object.values(LESSONS).flat();
-  const lesson = all.find(l => l.id === id);
+  const lesson = allLessons().find(l => l.id === id);
   if (!lesson) return;
   currentLesson = lesson;
   previousView = 'dashboardView';
-
   document.getElementById('lessonTitle').textContent = `${lesson.emoji} ${lesson.title}`;
-  document.getElementById('lessonSubtitle').textContent = lesson.titleEs;
-
+  document.getElementById('lessonSub').textContent = lesson.titleEs;
   const done = completedLessons.includes(lesson.id);
+
   document.getElementById('lessonContent').innerHTML = `
     <div class="lesson-section">
-      <h3><span class="section-icon" style="background:#EEF2FF">📚</span>Vocabulario esencial</h3>
+      <h3><span class="si" style="background:#EEF2FF">📚</span>Vocabulario esencial</h3>
       <table class="vocab-table">
-        <thead><tr><th>English 🇬🇧</th><th>Español 🇲🇽</th><th>Ejemplo en contexto</th></tr></thead>
-        <tbody>${lesson.vocabulary.map(v=>`
-          <tr>
-            <td class="vocab-en">${v.en}</td>
-            <td class="vocab-es">${v.es}</td>
-            <td class="vocab-example">${v.example}</td>
-          </tr>`).join('')}
+        <thead><tr><th>English 🇬🇧</th><th>Español</th><th>Ejemplo</th></tr></thead>
+        <tbody>${lesson.vocab.map(v=>`
+          <tr><td class="ven">${v.en}</td><td class="ves">${v.es}</td><td class="vex">${v.ex}</td></tr>`).join('')}
         </tbody>
       </table>
     </div>
-
     <div class="lesson-section">
-      <h3><span class="section-icon" style="background:#FFF0F5">📖</span>${lesson.grammar.title}</h3>
-      ${lesson.grammar.rules.map(rule=>`
+      <h3><span class="si" style="background:#FFF0F5">📖</span>${lesson.grammar.title}</h3>
+      ${lesson.grammar.rules.map(r=>`
         <div class="grammar-rule">
-          <div class="rule-title">📌 ${rule.title}</div>
-          <div class="rule-formula">${rule.formula}</div>
-          <ul class="grammar-examples">
-            ${rule.examples.map(ex=>`
-              <li>
-                <span class="en">🇬🇧 ${ex.en}</span>
-                <span class="es">🇲🇽 ${ex.es}</span>
-              </li>`).join('')}
+          <div class="rule-title">📌 ${r.title}</div>
+          <div class="rule-formula">${r.formula}</div>
+          <ul class="gex">${r.ex.map(e=>`
+            <li><span class="ge-en">🇬🇧 ${e.en}</span><span class="ge-es">🇲🇽 ${e.es}</span></li>`).join('')}
           </ul>
         </div>`).join('')}
     </div>
-
     <div class="lesson-section">
-      <h3><span class="section-icon" style="background:#F0FFF4">✍️</span>Práctica escrita</h3>
+      <h3><span class="si" style="background:#F0FFF4">✍️</span>Práctica escrita</h3>
       <div class="practice-area">
-        <div class="practice-prompt">${lesson.practice.prompt}</div>
-        <div class="practice-hint">💡 ${lesson.practice.hint}</div>
-        <textarea class="practice-input" id="practiceInput" placeholder="Write your answer here in English..." rows="4"></textarea>
-        <br>
-        <button class="practice-btn" onclick="checkWithAI()">✨ Revisar con IA (corrección instantánea)</button>
-        <div class="practice-feedback" id="practiceFeedback"></div>
+        <div class="pq">${lesson.practice.q}</div>
+        <div class="ph">💡 ${lesson.practice.h}</div>
+        <textarea class="pi" id="pi" placeholder="Write your answer here in English..." rows="4"></textarea><br>
+        <button class="pbtn" onclick="checkWithAI()">✨ Revisar con IA</button>
+        <div class="pfb" id="pfb"></div>
       </div>
     </div>
-
     <div class="lesson-actions">
-      <button class="complete-btn ${done?'done':''}" id="completeBtn" onclick="markComplete('${lesson.id}')">
-        ${done ? '✓ Lección completada' : '✅ Marcar como completada'}
+      <button class="cbtn ${done?'done':''}" id="cbtn" onclick="markComplete('${lesson.id}')">
+        ${done?'✓ Completada':'✅ Marcar completada'}
       </button>
-      <button class="chat-lesson-btn" onclick="openChat('${lesson.id}')">
-        💬 Practicar con el tutor IA
-      </button>
+      <button class="spk-lesson-btn" onclick="openSpeaking('${lesson.id}')">🎙️ Practicar con voz</button>
+      <button class="chlbtn" onclick="openChat('${lesson.id}')">💬 Practicar con chat</button>
     </div>`;
 
   showView('lessonView');
 }
 
 async function checkWithAI() {
-  const input = document.getElementById('practiceInput').value.trim();
-  if (!input) { showError('Por favor escribe tu respuesta antes de revisar.'); return; }
-
-  const fb = document.getElementById('practiceFeedback');
-  fb.style.display = 'block';
-  fb.className = 'practice-feedback';
-  fb.textContent = '⏳ Analizando tu respuesta...';
-
-  const prompt = `A Spanish-speaking student learning English completed this writing exercise.
-
-Exercise: "${currentLesson.practice.prompt}"
-Student's answer: "${input}"
-
-Give brief feedback (3-4 sentences) IN SPANISH:
-1. Highlight what's correct (strengths)
-2. Gently correct any grammar/vocabulary mistakes (show correct version)
-3. One short encouragement
-
-Start with ✅ if mostly correct, or 💡 if corrections needed. Be warm and encouraging.`;
-
+  const input = document.getElementById('pi').value.trim();
+  if (!input) { showError('Escribe tu respuesta antes de revisar.'); return; }
+  const fb = document.getElementById('pfb');
+  fb.style.display = 'block'; fb.className = 'pfb'; fb.textContent = '⏳ Analizando...';
   try {
-    const r = await callOpenAI([{role:'user', content:prompt}],
-      'You are a warm, encouraging English teacher giving written feedback in Spanish.');
-    fb.className = 'practice-feedback correct';
-    fb.innerHTML = r.replace(/\n/g,'<br>');
-  } catch(err) {
-    fb.className = 'practice-feedback error';
-    fb.textContent = '⚠️ Error: ' + (err.message || 'No se pudo conectar con la IA.');
-  }
+    const r = await callOpenAI([{role:'user',content:`Exercise: "${currentLesson.practice.q}"\nStudent answer: "${input}"\n\nGive brief feedback in Spanish (3-4 sentences): strengths, gentle corrections with explanation, encouragement. Start with ✅ if mostly correct or 💡 if corrections needed.`}],
+      'You are a warm English teacher giving written feedback in Spanish. Be encouraging and clear.');
+    fb.className = 'pfb ok'; fb.innerHTML = r.replace(/\n/g,'<br>');
+  } catch(e) { fb.className = 'pfb err'; fb.textContent = '⚠️ Error: ' + e.message; }
 }
 
 function markComplete(id) {
   if (!completedLessons.includes(id)) {
     completedLessons.push(id);
-    localStorage.setItem('englishAI_completed', JSON.stringify(completedLessons));
+    localStorage.setItem('engAI_done', JSON.stringify(completedLessons));
   }
-  document.getElementById('completeBtn').textContent = '✓ Lección completada';
-  document.getElementById('completeBtn').classList.add('done');
+  document.getElementById('cbtn').textContent = '✓ Completada';
+  document.getElementById('cbtn').classList.add('done');
 }
 
-// ── CHAT ──
-function openChat(lessonId = null) {
-  const all = Object.values(LESSONS).flat();
-  chatContext = lessonId ? all.find(l => l.id === lessonId) : null;
+// ── SYSTEM PROMPT ──
+function getSystemPrompt(context, mode) {
+  const ctx = context ? `Current lesson: "${context.title}". Key vocab: ${context.vocab.map(v=>v.en).join(', ')}. Grammar: ${context.grammar.title}. Focus on this lesson.`
+    : 'Free practice session.';
+  const modeNote = mode === 'speaking'
+    ? 'IMPORTANT: The student is using VOICE. Keep responses SHORT (2-3 sentences max). Be conversational. Ask one clear follow-up question. Do not use markdown, bullet points, or lists — plain natural speech only.'
+    : 'The student is typing. You can be slightly more detailed (3-5 sentences).';
+
+  return `You are Alex, a friendly English tutor for Spanish-speaking university Systems Engineering students.
+
+TEACHING METHODS:
+- Communicative Language Teaching: real conversation, not just rules
+- Krashen i+1: speak just above their level
+- Spaced Repetition: reference earlier vocab naturally
+- Gentle correction: model correct form, explain briefly, continue conversation
+
+CORRECTION STYLE: Never interrupt. After they finish, say: "Great! Quick note — instead of '[error]', we say '[correct]'. [Why in one phrase]. Anyway..." Then continue.
+
+If they write in Spanish, say: "Try in English! You can do it 💪"
+
+${modeNote}
+${ctx}`;
+}
+
+// ── SPEAKING MODE ──
+function initSpeechRecognition() {
+  const warn = document.getElementById('browserWarn');
+  if (!SpeechRecognition) { warn.style.display = 'block'; return; }
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+
+  recognition.onresult = (e) => {
+    let interim = '', final = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) final += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
+    }
+    document.getElementById('interimText').textContent = interim || final;
+    if (final) {
+      document.getElementById('interimText').textContent = '';
+      handleSpokenInput(final.trim());
+    }
+  };
+  recognition.onerror = (e) => {
+    setMicState('idle');
+    if (e.error !== 'no-speech' && e.error !== 'aborted') showError('Error de micrófono: ' + e.error + '. Verifica que diste permiso al navegador.');
+  };
+  recognition.onend = () => { if (isListening) setMicState('idle'); };
+}
+
+function openSpeaking(lessonId) {
+  spkContext = lessonId ? allLessons().find(l => l.id === lessonId) : null;
   previousView = lessonId ? 'lessonView' : 'dashboardView';
+  document.getElementById('spkSub').textContent = spkContext ? `Practicando: ${spkContext.title}` : 'Conversación libre de voz';
+  document.getElementById('spkCtx').textContent = spkContext ? `📖 ${spkContext.emoji}` : '🎙️ Free Speaking';
+  spkHistory = [];
+  const msgs = document.getElementById('spkMessages');
+  msgs.innerHTML = '';
 
-  document.getElementById('chatSubtitle').textContent = chatContext
-    ? `Practicando: ${chatContext.title}` : 'Conversación libre en inglés';
-  document.getElementById('chatContextTag').textContent = chatContext
-    ? `📖 ${chatContext.emoji} ${chatContext.titleEs}` : '💬 Free Chat';
+  const welcome = spkContext
+    ? `Hello! I'm Alex. Let's practice "${spkContext.title}" by speaking. Press the microphone and talk to me in English. I'll correct gently and keep us on topic. Ready?`
+    : `Hello! I'm Alex, your speaking tutor. Press the microphone and speak to me in English — any topic! I'll correct your mistakes gently and ask questions to keep you talking. Don't worry about being perfect. Let's go!`;
 
-  // Chips
-  const chips = document.getElementById('suggestionChips');
+  appendSpkMsg('assistant', welcome);
+  if (speechSynthesis) speakText(welcome);
+  showView('speakingView');
+}
+
+function toggleMic() {
+  if (!recognition) { showError('Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.'); return; }
+  if (isSpeaking) { stopSpeaking(); return; }
+  if (isListening) {
+    recognition.stop();
+    isListening = false;
+    setMicState('idle');
+  } else {
+    stopSpeaking();
+    try {
+      recognition.start();
+      isListening = true;
+      setMicState('listening');
+    } catch(e) { showError('No se pudo acceder al micrófono. ¿Diste permiso al navegador?'); }
+  }
+}
+
+function setMicState(state) {
+  isListening = state === 'listening';
+  const btn = document.getElementById('micBtn');
+  btn.className = 'mic-btn ' + state;
+  const labels = {idle:'Toca el micrófono para hablar en inglés',listening:'Escuchando... habla ahora 🎤',thinking:'Alex está pensando...',speaking:'Alex está hablando...'};
+  document.getElementById('micStatus').textContent = labels[state] || '';
+  const icons = {idle:'🎤',listening:'🔴',thinking:'⏳',speaking:'🔊'};
+  btn.textContent = icons[state] || '🎤';
+}
+
+async function handleSpokenInput(text) {
+  isListening = false;
+  setMicState('thinking');
+  appendSpkMsg('user', text);
+  spkHistory.push({role:'user', content:text});
+
+  try {
+    const response = await callOpenAI(spkHistory, getSystemPrompt(spkContext, 'speaking'));
+    appendSpkMsg('assistant', response);
+    spkHistory.push({role:'assistant', content:response});
+    if (spkHistory.length > 20) spkHistory = spkHistory.slice(-20);
+    speakText(response);
+  } catch(e) {
+    setMicState('idle');
+    showError(e.message || 'Error al conectar con OpenAI.');
+  }
+}
+
+function speakText(text) {
+  if (!window.speechSynthesis) return;
+  stopSpeaking();
+  const clean = text.replace(/\*\*/g,'').replace(/\*/g,'').replace(/#+\s/g,'').replace(/`/g,'');
+  currentUtterance = new SpeechSynthesisUtterance(clean);
+  currentUtterance.lang = 'en-US';
+  currentUtterance.rate = speechRate;
+  currentUtterance.pitch = 1.0;
+
+  // Pick best English voice
+  const voices = speechSynthesis.getVoices();
+  const preferred = voices.find(v => v.lang === 'en-US' && v.name.includes('Samantha'))
+    || voices.find(v => v.lang === 'en-US' && !v.name.toLowerCase().includes('google'))
+    || voices.find(v => v.lang.startsWith('en-US'))
+    || voices.find(v => v.lang.startsWith('en'));
+  if (preferred) currentUtterance.voice = preferred;
+
+  isSpeaking = true;
+  setMicState('speaking');
+  document.getElementById('stopSpkBtn').style.display = 'inline-block';
+
+  currentUtterance.onend = () => {
+    isSpeaking = false;
+    document.getElementById('stopSpkBtn').style.display = 'none';
+    setMicState('idle');
+  };
+  currentUtterance.onerror = () => { isSpeaking = false; setMicState('idle'); };
+
+  speechSynthesis.speak(currentUtterance);
+}
+
+function stopSpeaking() {
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  isSpeaking = false;
+  document.getElementById('stopSpkBtn').style.display = 'none';
+  setMicState('idle');
+}
+
+function setSpeed(rate, btn) {
+  speechRate = rate;
+  document.querySelectorAll('.spd-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function appendSpkMsg(role, text) {
+  const msgs = document.getElementById('spkMessages');
+  const div = document.createElement('div');
+  div.className = `spk-msg ${role}`;
+  div.innerHTML = `<div class="av">${role==='user'?'👤':'🤖'}</div>
+    <div class="spk-bub">${text.replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ── CHAT MODE ──
+function openChat(lessonId) {
+  chatContext = lessonId ? allLessons().find(l => l.id === lessonId) : null;
+  previousView = lessonId ? 'lessonView' : 'dashboardView';
+  document.getElementById('chatSub').textContent = chatContext ? `Practicando: ${chatContext.title}` : 'Conversación libre en inglés';
+  document.getElementById('chatCtx').textContent = chatContext ? `📖 ${chatContext.emoji}` : '💬 Chat';
+  chatHistory = [];
+  document.getElementById('chatMessages').innerHTML = '';
+
+  const chips = document.getElementById('chatChips');
   chips.style.display = 'flex';
   chips.innerHTML = chatContext ? `
-    <span class="chip" onclick="sendSuggestion(this.textContent)">Explain this grammar to me</span>
-    <span class="chip" onclick="sendSuggestion(this.textContent)">Give me a practice exercise</span>
-    <span class="chip" onclick="sendSuggestion(this.textContent)">Let's have a conversation about this topic</span>
-    <span class="chip" onclick="sendSuggestion(this.textContent)">I have a question</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Explain this grammar</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Give me an exercise</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Let's have a conversation</span>
   ` : `
-    <span class="chip" onclick="sendSuggestion(this.textContent)">Hello! Let's practice English</span>
-    <span class="chip" onclick="sendSuggestion(this.textContent)">Give me a fun topic to discuss</span>
-    <span class="chip" onclick="sendSuggestion(this.textContent)">Check my English level please</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Hello! Let's practice</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Give me a topic to discuss</span>
+    <span class="chip" onclick="sendSuggestion(this.textContent)">Check my level please</span>
   `;
 
-  // Welcome message if no history
-  const msgs = document.getElementById('chatMessages');
-  msgs.innerHTML = '';
-  chatHistory = [];
-
   const welcome = chatContext
-    ? `Hello! I'm Alex, your English tutor 😊 I can see you're working on <strong>"${chatContext.title}"</strong> — great choice! Let's practice together. Would you like me to explain the grammar, give you an exercise, or just have a conversation about this topic? What works best for you?`
-    : `Hello! I'm Alex, your personal English tutor 😊 I use the communicative method — that means we'll practice through real conversation, I'll gently correct your mistakes, and help you build confidence step by step.<br><br>Let's start! Tell me a little about yourself in English: What's your name? What do you study? And why do you want to improve your English? 🌍`;
-
-  appendMessage('assistant', welcome);
+    ? `Hello! I'm Alex 😊 I see you're working on <strong>"${chatContext.title}"</strong>. Great! What would you like to do — grammar explanation, an exercise, or just conversation practice?`
+    : `Hello! I'm Alex, your English tutor 😊 Let's practice through real conversation. Tell me about yourself in English — what's your name, what do you study, and why are you learning English? 🌍`;
+  addMsg('assistant', welcome);
   showView('chatView');
   document.getElementById('chatInput').focus();
 }
 
-function getSystemPrompt() {
-  const ctx = chatContext
-    ? `The student is practicing this lesson: "${chatContext.title}" (${chatContext.titleEs}). Key vocabulary: ${chatContext.vocabulary.map(v=>v.en).join(', ')}. Grammar focus: ${chatContext.grammar.title}. Keep conversation focused on this lesson's content.`
-    : `The student is having a free conversation practice session.`;
-
-  return `You are Alex, a friendly, patient, and encouraging English tutor for Spanish-speaking university students. Your teaching philosophy:
-
-METHODS:
-- Communicative Language Teaching (CLT): focus on real communication, not just rules
-- Krashen's Input Hypothesis: provide comprehensible input slightly above their level (i+1)
-- Spaced Repetition: occasionally reference vocabulary/grammar from earlier in the conversation
-- Scaffolded Learning: build on what they know, gradually increase complexity
-- Socratic method: ask questions to make students think, don't just give answers
-
-CORRECTION STYLE (very important):
-- NEVER interrupt mid-sentence to correct; wait until they finish
-- Model the correct form naturally: "Nice! And just to note — we say '[correct]' instead of '[error]'. [Brief reason]. Anyway, [continue conversation]..."
-- Celebrate ALL attempts, even imperfect ones
-- If they write in Spanish, gently say: "I understood you! Now try to say that in English — you can do it! 💪"
-
-CONVERSATION STYLE:
-- Keep responses to 2-4 sentences usually (don't lecture)
-- Always end with a question to keep conversation going
-- Use relatable examples for a university Systems Engineering student
-- Be enthusiastic and warm
-
-${ctx}`;
-}
-
 async function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const text = input.value.trim();
+  const inp = document.getElementById('chatInput');
+  const text = inp.value.trim();
   if (!text) return;
-  input.value = '';
-  input.style.height = 'auto';
+  inp.value = ''; inp.style.height = 'auto';
+  document.getElementById('chatChips').style.display = 'none';
+  addMsg('user', text);
+  chatHistory.push({role:'user', content:text});
 
-  document.getElementById('suggestionChips').style.display = 'none';
-  appendMessage('user', text);
-  chatHistory.push({ role: 'user', content: text });
-
-  // Typing indicator
   const msgs = document.getElementById('chatMessages');
   const typing = document.createElement('div');
-  typing.id = 'typing';
-  typing.className = 'message assistant';
-  typing.innerHTML = `<div class="msg-avatar">🤖</div>
-    <div class="typing-indicator">
-      <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
-    </div>`;
+  typing.id = 'typing'; typing.className = 'message assistant';
+  typing.innerHTML = `<div class="mav">🤖</div><div class="typing-ind"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
   msgs.appendChild(typing);
-  scrollChat();
+  msgs.scrollTop = msgs.scrollHeight;
   document.getElementById('sendBtn').disabled = true;
 
   try {
-    const response = await callOpenAI(chatHistory, getSystemPrompt());
+    const r = await callOpenAI(chatHistory, getSystemPrompt(chatContext, 'chat'));
     document.getElementById('typing')?.remove();
-    appendMessage('assistant', response);
-    chatHistory.push({ role: 'assistant', content: response });
+    addMsg('assistant', r);
+    chatHistory.push({role:'assistant', content:r});
     if (chatHistory.length > 24) chatHistory = chatHistory.slice(-24);
-  } catch(err) {
+  } catch(e) {
     document.getElementById('typing')?.remove();
-    showError(err.message || 'Error de conexión. Verifica tu API key y tu conexión a internet.');
+    showError(e.message || 'Error de conexión.');
   }
   document.getElementById('sendBtn').disabled = false;
   document.getElementById('chatInput').focus();
 }
 
-function sendSuggestion(text) {
-  document.getElementById('chatInput').value = text;
-  sendMessage();
-}
+function sendSuggestion(t) { document.getElementById('chatInput').value = t; sendMessage(); }
+function handleEnter(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight,110)+'px'; }
 
-function handleEnter(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-}
-
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-}
-
-function appendMessage(role, text) {
+function addMsg(role, text) {
   const msgs = document.getElementById('chatMessages');
   const div = document.createElement('div');
   div.className = `message ${role}`;
-  div.innerHTML = `
-    <div class="msg-avatar">${role === 'user' ? '👤' : '🤖'}</div>
-    <div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  div.innerHTML = `<div class="mav">${role==='user'?'👤':'🤖'}</div><div class="mbub">${text.replace(/\n/g,'<br>')}</div>`;
   msgs.appendChild(div);
-  scrollChat();
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
-function scrollChat() {
-  const m = document.getElementById('chatMessages');
-  m.scrollTop = m.scrollHeight;
-}
-
-// ── OPENAI API ──
+// ── OPENAI ──
 async function callOpenAI(messages, systemPrompt) {
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'system', content: systemPrompt }, ...messages],
-      max_tokens: 500,
-      temperature: 0.75
-    })
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
+    body:JSON.stringify({model:'gpt-4o-mini',messages:[{role:'system',content:systemPrompt},...messages],max_tokens:350,temperature:0.75})
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    if (res.status === 401) throw new Error('API key inválida o expirada. Ve a ⚙️ para actualizarla.');
-    if (res.status === 429) throw new Error('Límite de uso alcanzado. Espera un momento e intenta de nuevo.');
-    throw new Error(err.error?.message || `Error HTTP ${res.status}`);
+    const e = await res.json().catch(()=>({}));
+    if (res.status===401) throw new Error('API key inválida. Ve a ⚙️ para actualizarla.');
+    if (res.status===429) throw new Error('Límite de uso alcanzado. Espera un momento.');
+    throw new Error(e.error?.message || `Error HTTP ${res.status}`);
   }
-  const data = await res.json();
-  return data.choices[0].message.content;
+  return (await res.json()).choices[0].message.content;
 }
 
 // ── NAVIGATION ──
-function showView(id) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function goToDashboard() {
-  showView('dashboardView');
-  renderDashboard();
-}
-
+function showView(id) { document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function goToDashboard() { showView('dashboardView'); renderDashboard(); }
 function goBack() {
-  if (previousView === 'lessonView' && currentLesson) {
-    showView('lessonView');
-  } else {
-    goToDashboard();
-  }
+  stopSpeaking();
+  if (previousView === 'lessonView' && currentLesson) showView('lessonView');
+  else goToDashboard();
 }
 
-// ── ERROR TOAST ──
+// ── TOAST ──
 function showError(msg) {
   const t = document.getElementById('errorToast');
   t.textContent = '⚠️ ' + msg;
   t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 6000);
+  setTimeout(()=>t.style.display='none', 6000);
 }
+
+// Load voices when available
+if (window.speechSynthesis) speechSynthesis.onvoiceschanged = () => {};
 </script>
 </body>
 </html>
