@@ -147,6 +147,8 @@
     .spd-btn{padding:5px 11px;border:2px solid var(--border);border-radius:20px;background:#fff;cursor:pointer;font-size:11px;font-weight:600;color:var(--text-muted);transition:all .2s}
     .spd-btn.active{background:var(--success);border-color:var(--success);color:#fff}
     .stop-speaking-btn{padding:5px 14px;background:var(--accent);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;display:none}
+    .send-now-btn{padding:7px 18px;background:var(--success);color:#fff;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;animation:send-pulse 1s ease-in-out infinite alternate}
+    @keyframes send-pulse{from{box-shadow:0 0 0 0 rgba(78,205,196,.5)}to{box-shadow:0 0 0 8px rgba(78,205,196,0)}}
 
     /* ── CHAT VIEW ── */
     .chat-container{height:calc(100vh - 175px);display:flex;flex-direction:column;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
@@ -288,11 +290,14 @@
           <button class="mic-btn idle" id="micBtn" onclick="toggleMic()">🎤</button>
           <div class="mic-status" id="micStatus">Toca el micrófono para hablar en inglés</div>
           <div class="mic-controls">
+            <button class="send-now-btn" id="sendNowBtn" onclick="flushSpeech()" style="display:none">✅ Enviar ya</button>
+            <button class="stop-speaking-btn" id="stopSpkBtn" onclick="stopSpeaking()">⏹ Parar</button>
+          </div>
+          <div class="mic-controls" style="margin-top:6px">
             <span class="spd-label">Velocidad de Alex:</span>
             <button class="spd-btn active" onclick="setSpeed(0.75,this)">Lento</button>
             <button class="spd-btn" onclick="setSpeed(0.9,this)">Normal</button>
             <button class="spd-btn" onclick="setSpeed(1.1,this)">Rápido</button>
-            <button class="stop-speaking-btn" id="stopSpkBtn" onclick="stopSpeaking()">⏹ Parar</button>
           </div>
         </div>
       </div>
@@ -686,31 +691,77 @@ ${ctx}`;
 }
 
 // ── SPEAKING MODE ──
+let accumulatedText = '';
+let pauseTimer = null;
+const PAUSE_DELAY = 2500; // ms to wait after last word before sending
+
 function initSpeechRecognition() {
   const warn = document.getElementById('browserWarn');
   if (!SpeechRecognition) { warn.style.display = 'block'; return; }
   recognition = new SpeechRecognition();
   recognition.lang = 'en-US';
-  recognition.continuous = false;
+  recognition.continuous = true;       // ← keeps listening through pauses
   recognition.interimResults = true;
 
   recognition.onresult = (e) => {
-    let interim = '', final = '';
+    let interim = '';
     for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) final += e.results[i][0].transcript;
-      else interim += e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        accumulatedText += ' ' + e.results[i][0].transcript;
+        clearTimeout(pauseTimer);
+        startPauseTimer();
+      } else {
+        interim += e.results[i][0].transcript;
+      }
     }
-    document.getElementById('interimText').textContent = interim || final;
-    if (final) {
-      document.getElementById('interimText').textContent = '';
-      handleSpokenInput(final.trim());
-    }
+    // Show everything heard so far + interim
+    const display = (accumulatedText + ' ' + interim).trim();
+    document.getElementById('interimText').textContent = display;
   };
+
   recognition.onerror = (e) => {
+    if (e.error === 'no-speech') return; // ignore silence
+    if (e.error === 'aborted') return;
     setMicState('idle');
-    if (e.error !== 'no-speech' && e.error !== 'aborted') showError('Error de micrófono: ' + e.error + '. Verifica que diste permiso al navegador.');
+    showError('Error de micrófono: ' + e.error + '. Verifica los permisos del navegador.');
   };
-  recognition.onend = () => { if (isListening) setMicState('idle'); };
+
+  // continuous=true rarely fires onend, but just in case restart
+  recognition.onend = () => {
+    if (isListening) {
+      try { recognition.start(); } catch(e) {}
+    }
+  };
+}
+
+function startPauseTimer() {
+  let remaining = PAUSE_DELAY;
+  const step = 100;
+  clearInterval(pauseTimer);
+  pauseTimer = setInterval(() => {
+    remaining -= step;
+    if (remaining > 0) {
+      const secs = (remaining / 1000).toFixed(1);
+      document.getElementById('micStatus').textContent = `Enviando en ${secs}s... (sigue hablando para continuar)`;
+      document.getElementById('sendNowBtn').style.display = 'inline-block';
+    } else {
+      clearInterval(pauseTimer);
+      flushSpeech();
+    }
+  }, step);
+}
+
+function flushSpeech() {
+  clearInterval(pauseTimer);
+  const text = accumulatedText.trim();
+  accumulatedText = '';
+  document.getElementById('interimText').textContent = '';
+  document.getElementById('sendNowBtn').style.display = 'none';
+  if (!text) return;
+  // Stop recognition while AI responds
+  isListening = false;
+  try { recognition.stop(); } catch(e) {}
+  handleSpokenInput(text);
 }
 
 function openSpeaking(lessonId) {
@@ -733,18 +784,39 @@ function openSpeaking(lessonId) {
 
 function toggleMic() {
   if (!recognition) { showError('Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.'); return; }
-  if (isSpeaking) { stopSpeaking(); return; }
+  if (isSpeaking) { stopSpeaking(); startListening(); return; }
   if (isListening) {
-    recognition.stop();
-    isListening = false;
-    setMicState('idle');
+    // If there's accumulated text, send it now; otherwise just stop
+    if (accumulatedText.trim()) {
+      flushSpeech();
+    } else {
+      clearInterval(pauseTimer);
+      accumulatedText = '';
+      isListening = false;
+      try { recognition.stop(); } catch(e) {}
+      setMicState('idle');
+      document.getElementById('sendNowBtn').style.display = 'none';
+      document.getElementById('interimText').textContent = '';
+    }
   } else {
-    stopSpeaking();
-    try {
-      recognition.start();
-      isListening = true;
-      setMicState('listening');
-    } catch(e) { showError('No se pudo acceder al micrófono. ¿Diste permiso al navegador?'); }
+    startListening();
+  }
+}
+
+function startListening() {
+  stopSpeaking();
+  accumulatedText = '';
+  clearInterval(pauseTimer);
+  document.getElementById('interimText').textContent = '';
+  document.getElementById('sendNowBtn').style.display = 'none';
+  try {
+    recognition.start();
+    isListening = true;
+    setMicState('listening');
+  } catch(e) {
+    // already running, that's fine
+    isListening = true;
+    setMicState('listening');
   }
 }
 
@@ -759,7 +831,6 @@ function setMicState(state) {
 }
 
 async function handleSpokenInput(text) {
-  isListening = false;
   setMicState('thinking');
   appendSpkMsg('user', text);
   spkHistory.push({role:'user', content:text});
@@ -769,6 +840,7 @@ async function handleSpokenInput(text) {
     appendSpkMsg('assistant', response);
     spkHistory.push({role:'assistant', content:response});
     if (spkHistory.length > 20) spkHistory = spkHistory.slice(-20);
+    // speakText will call startListening() when Alex finishes speaking
     speakText(response);
   } catch(e) {
     setMicState('idle');
@@ -800,7 +872,8 @@ function speakText(text) {
   currentUtterance.onend = () => {
     isSpeaking = false;
     document.getElementById('stopSpkBtn').style.display = 'none';
-    setMicState('idle');
+    // Auto-restart mic after Alex finishes — seamless conversation
+    setTimeout(() => startListening(), 400);
   };
   currentUtterance.onerror = () => { isSpeaking = false; setMicState('idle'); };
 
