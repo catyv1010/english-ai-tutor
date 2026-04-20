@@ -1097,7 +1097,7 @@ ${ctx}`;
 // ── SPEAKING MODE ──
 let accumulatedText = '';
 let pauseTimer = null;
-const PAUSE_DELAY = 2500; // ms to wait after last word before sending
+const PAUSE_DELAY = 4000; // ms to wait after last word before sending
 
 function initSpeechRecognition() {
   const warn = document.getElementById('browserWarn');
@@ -1112,13 +1112,19 @@ function initSpeechRecognition() {
     for (let i = e.resultIndex; i < e.results.length; i++) {
       if (e.results[i].isFinal) {
         accumulatedText += ' ' + e.results[i][0].transcript;
-        clearTimeout(pauseTimer);
-        startPauseTimer();
       } else {
         interim += e.results[i][0].transcript;
       }
     }
-    // Show everything heard so far + interim
+    // ── KEY FIX: reset timer on ANY speech (interim or final)
+    // This prevents cutting mid-sentence during natural pauses
+    clearInterval(pauseTimer);
+    pauseTimer = null;
+    if (accumulatedText.trim()) {
+      // Only start countdown if we have finalized words to send
+      startPauseTimer();
+    }
+    // Show everything heard so far + what's being said right now
     const display = (accumulatedText + ' ' + interim).trim();
     document.getElementById('interimText').textContent = display;
   };
@@ -1140,16 +1146,17 @@ function initSpeechRecognition() {
 
 function startPauseTimer() {
   let remaining = PAUSE_DELAY;
-  const step = 100;
-  clearInterval(pauseTimer);
+  const step = 200; // check every 200ms is enough
   pauseTimer = setInterval(() => {
     remaining -= step;
     if (remaining > 0) {
-      const secs = (remaining / 1000).toFixed(1);
-      document.getElementById('micStatus').textContent = `Enviando en ${secs}s... (sigue hablando para continuar)`;
+      const secs = (remaining / 1000).toFixed(0);
+      const dots = '.'.repeat(Math.ceil(remaining / 1000));
+      document.getElementById('micStatus').textContent = `Pausando${dots} envío en ${secs}s (sigue hablando)`;
       document.getElementById('sendNowBtn').style.display = 'inline-block';
     } else {
       clearInterval(pauseTimer);
+      pauseTimer = null;
       flushSpeech();
     }
   }, step);
